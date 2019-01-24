@@ -19,3 +19,27 @@
         3. **How do you request a measurement (if applicable)?** See Circuit Python example
         4.**How do you read back the result?** It comes in as a float so you can do whatever to read that.
         5. **What conversion is needed to convert the result into something meaningful?** Nothing really as it comes as relative to the circuit temperature already.
+        
+## Installation
+
+
+````
+# Create a virtual environement for storing your stuf:
+# install venv
+sudo apt-get install python3-venv
+# Create venv called skadoosh - it is stored in a folder in the current working directory
+python3 -m venv skadoosh
+
+# ACTIVATE YOUR ENVIRONMENT
+source skadoosh/bin/activate
+
+# ONLY RUN THE BELOW ONCE YOU HAVE ACTIVATED YOUR ENVIRONEMNT
+
+
+# Install Circuit Python (Adafruit blinka)
+# NOTE: we do not use 'sudo' here as that would install these globally, instead of for this environement
+pip3 install RPI.GPIO
+pip3 install adafruit-blinka
+# Install Temperature sensor API (that uses Circuit-Python)
+pip3 install adafruit-circuitpython-tmp007
+````
