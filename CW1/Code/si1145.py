@@ -280,18 +280,18 @@ class SI1145(object):
         # auto run
         self._device.write8(SI1145_REG_COMMAND, SI1145_PSALS_AUTO)
 
-        # returns the UV index * 100 (divide by 100 to get the index)
-        def readUV(self):
-            return self._device.readU16LE(0x2C)
+    # returns the UV index * 100 (divide by 100 to get the index)
+    def readUV(self):
+        return self._device.readU16LE(0x2C)
 
-        # returns visible + IR light levels
-        def readVisible(self):
-            return self._device.readU16LE(0x22)
+    # returns visible + IR light levels
+    def readVisible(self):
+        return self._device.readU16LE(0x22)
 
-        # returns IR light levels
-        def readIR(self):
-            return self._device.readU16LE(0x24)
+    # returns IR light levels
+    def readIR(self):
+        return self._device.readU16LE(0x24)
 
-        # Returns "Proximity" - assumes an IR LED is attached to LED
-        def readProx(self):
-            return self._device.readU16LE(0x26)
+    # Returns "Proximity" - assumes an IR LED is attached to LED
+    def readProx(self):
+        return self._device.readU16LE(0x26)
