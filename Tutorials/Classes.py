@@ -6,14 +6,8 @@ functions <=> methods
 
 class Employee:
 
-    #  Default constructor
-    # def __innit__(self):
-    #     self.name = "None set"
-    #     self.surname = "None set"
-    #     self.email = "None set"
-
-    #  Constructor in python, assigns attributes to objects
-    def __innit__(self, name, surname):
+    #  Constructor, assigns attributes to objects, you can ONLY HAVE ONE per class, but it can have functions inside it
+    def __init__(self, name, surname):
         self.name = name
         self.surname = surname
         self.email = name + surname + "@ifeisgay.com"
