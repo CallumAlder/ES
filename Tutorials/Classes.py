@@ -6,6 +6,7 @@ functions <=> methods
 
 class Employee:
 
+    #  __declaring a variable as __variable makes it private, _variable is convention for protected but does nada irl
     num_of_employees = 0
     raise_multiplier = 1.04
 
