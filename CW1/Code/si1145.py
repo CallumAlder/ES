@@ -1,5 +1,6 @@
-#!/usr/bin/python
-
+# This script can be made 'executable' with a shebang, e.g: #!/usr/bin/env python3
+# Then using the terminal command: chmod +x si1145.py
+# running the script can then be done with: ./si1145.py
 
 # Author: Joe Gutting
 # SI1145 library
@@ -37,12 +38,12 @@ Implementation Notes
   MEAS_RATE = 0
 
 **Hardware:**
-Si114
+Si114X (Tested with Adafruit Si1145)
 
 **Software and Dependencies:**
 
-* MicroPython machine library
-  pip3 install micropython-machine
+* Adafruit GPIO 
+  pip3 install adafruit-gpio
 * 
 """
 
@@ -106,22 +107,22 @@ SI1145_PARAM_PS2ADCMUX                  = 0x08  # Selects ADC input for PS2 | Pa
 SI1145_PARAM_PS3ADCMUX                  = 0x09  # Selects ADC input for PS3 /
 SI1145_PARAM_PSADCOUNTER                = 0x0A  # [6:4]=ADC Recovery period - Page 53
 SI1145_PARAM_PSADCGAIN                  = 0x0B  # Sets the LED's Pulse width - Page 54
-SI1145_PARAM_PSADCMISC                  = 0x0C  # [5]=Set sunlight mode, [2]=RAW ADC or Proximity
-SI1145_PARAM_PSADCMISC_RANGE            = 0x20  # 
-SI1145_PARAM_PSADCMISC_PSMODE           = 0x04  # 
+SI1145_PARAM_PSADCMISC                  = 0x0C  # [5]=Set sunlight mode, [2]=RAW ADC(0) or Proximity(1)
+SI1145_PARAM_PSADCMISC_RANGE            = 0x20  # Value to set PS ADC to sunlight / high range mode 
+SI1145_PARAM_PSADCMISC_PSMODE           = 0x04  # Value to set PS ADC to Proximity Mode
 
 SI1145_PARAM_ALSIRADCMUX                = 0x0E  # Selects ADC input for ALS_IR
 SI1145_PARAM_AUXADCMUX                  = 0x0F  # Selects input for AUX measurement
 
 SI1145_PARAM_ALSVISADCOUNTER            = 0x10  # [6:4] Recovery Period of ADC before ALS-Vis measurement
 SI1145_PARAM_ALSVISADCGAIN              = 0x11  # [2:0] Max gain is 128
-SI1145_PARAM_ALSVISADCMISC              = 0x12  # [5]=Sets sunlight mode
-SI1145_PARAM_ALSVISADCMISC_VISRANGE     = 0x20  # 
+SI1145_PARAM_ALSVISADCMISC              = 0x12  # [5]=Sets sunlight / high range mode 
+SI1145_PARAM_ALSVISADCMISC_VISRANGE     = 0x20  # Value to set VIS ADC sunlight mode
 
 SI1145_PARAM_ALSIRADCOUNTER             = 0x1D  # [6:4] Recovery Period of ADC before ALS-IR measurement
 SI1145_PARAM_ALSIRADCGAIN               = 0x1E  # [2:0] Max gain is 128
-SI1145_PARAM_ALSIRADCMISC               = 0x1F  # [5]=Sets sunglight mode
-SI1145_PARAM_ALSIRADCMISC_RANGE         = 0x20  # 
+SI1145_PARAM_ALSIRADCMISC               = 0x1F  # [5]=Sets sunlight / high range mode
+SI1145_PARAM_ALSIRADCMISC_RANGE         = 0x20  # Value to set IR ADC sunlight mode
 
 SI1145_PARAM_ADCCOUNTER_511CLK          = 0x70  # 
 
@@ -167,12 +168,12 @@ SI1145_REG_IRQSTAT_ALS                  = 0x01  #
 
 SI1145_REG_ALSVISDATA0                  = 0x22  # \
 SI1145_REG_ALSVISDATA1                  = 0x23  # | Used in Autonomous measurements
-SI1145_REG_ALSIRDATA0                   = 0x24  # | Must be read after INT has 
+SI1145_REG_ALSIRDATA0                   = 0x24  # | Must be read after INT (interrupt) has 
 SI1145_REG_ALSIRDATA1                   = 0x25  # | been asserted, but before 
 SI1145_REG_PS1DATA0                     = 0x26  # | the next measurement is made
 SI1145_REG_PS1DATA1                     = 0x27  # | Sec 5.6.2 of Docs
 SI1145_REG_PS2DATA0                     = 0x28  # |
-SI1145_REG_PS2DATA1                     = 0x29  # |
+SI1145_REG_PS2DATA1                     = 0x29  # | DATA = [DATA1 DATA0] - 16bits
 SI1145_REG_PS3DATA0                     = 0x2A  # |
 SI1145_REG_PS3DATA1                     = 0x2B  # |
 SI1145_REG_UVINDEX0                     = 0x2C  # |
@@ -230,18 +231,66 @@ class SI1145(object):
         self._device.write8(SI1145_REG_UCOEFF2, 0x02)
         self._device.write8(SI1145_REG_UCOEFF3, 0x00)
 
-        # Enable UV sensor
-        self.writeParam(SI1145_PARAM_CHLIST, SI1145_PARAM_CHLIST_ENUV | SI1145_PARAM_CHLIST_ENALSIR | SI1145_PARAM_CHLIST_ENALSVIS | SI1145_PARAM_CHLIST_ENPS1)
+        # Enable UV,IR,VIS and PS sensors
+        self.writeParam(SI1145_PARAM_CHLIST, 
+                        SI1145_PARAM_CHLIST_ENUV | 
+                        SI1145_PARAM_CHLIST_ENALSIR | 
+                        SI1145_PARAM_CHLIST_ENALSVIS | 
+                        SI1145_PARAM_CHLIST_ENPS1)
 
-        # Enable interrupt on every sample
-        self._device.write8(SI1145_REG_INTCFG, SI1145_REG_INTCFG_INTOE)
-        self._device.write8(SI1145_REG_IRQEN, SI1145_REG_IRQEN_ALSEVERYSAMPLE)
+        # self.init_IR_interrupt()  # IR Interrupt
 
+        # ------------------------------------------------------------ IR
+
+        # Define that a small IR LED is connected
+        self.writeParam(SI1145_PARAM_ALSIRADCMUX, SI1145_PARAM_ADCMUX_SMALLIR)
+
+        # Fastest clocks, clock div 1
+        self.writeParam(SI1145_PARAM_ALSIRADCGAIN, 0)
+
+        # Take 511 clocks to measure
+        self.writeParam(SI1145_PARAM_ALSIRADCOUNTER, SI1145_PARAM_ADCCOUNTER_511CLK)
+
+        # ------------------------------------------------------------ VIS
+
+        # fastest clocks, clock div 1
+        self.writeParam(SI1145_PARAM_ALSVISADCGAIN, 0)
+
+        # Take 511 clocks to measure
+        self.writeParam(SI1145_PARAM_ALSVISADCOUNTER, SI1145_PARAM_ADCCOUNTER_511CLK)
+
+        # ------------------------------------------------------------ 
+
+        # measurement rate for auto
+        self._device.write8(SI1145_REG_MEASRATE0, 0xFF)  # 255 * 31.25uS = 8ms
+
+        # auto run
+        self._device.write8(SI1145_REG_COMMAND, SI1145_PSALS_AUTO)
+
+    # 'Outdoor'/Sunlight/High Range Mode
+    def high_range_mode(self):
+        # High range mode is when you expect a large dynamic range, such as when
+        # outdoors / in sunlight
+
+        # IR
+        self.writeParam(SI1145_PARAM_ALSIRADCMISC, SI1145_PARAM_ALSIRADCMISC_RANGE)
+
+        # VIS
+        self.writeParam(SI1145_PARAM_ALSVISADCMISC, SI1145_PARAM_ALSVISADCMISC_VISRANGE)
+
+        # PS (also changed value from RAW to Proximity mode)
+        self.writeParam(SI1145_PARAM_PSADCMISC, 
+                        SI1145_PARAM_PSADCMISC_RANGE | 
+                        SI1145_PARAM_PSADCMISC_PSMODE)
+
+    # Initialise Proximity Sensor using LED 1
+    def init_PS(self):
         # /****************************** Prox Sense 1 */
+        # Requires an IR LED Connected to LED 1 pin
 
         # Program LED current
         self._device.write8(SI1145_REG_PSLED21, 0x03)  # 20mA for LED 1 only
-        self.writeParam(SI1145_PARAM_PS1ADCMUX, SI1145_PARAM_ADCMUX_LARGEIR)
+        self.writeParam(SI1145_PARAM_PS1ADCMUX, SI1145_PARAM_ADCMUX_LARGEIR)  # Large LED used
 
         # Prox sensor #1 uses LED #1
         self.writeParam(SI1145_PARAM_PSLED12SEL, SI1145_PARAM_PSLED12SEL_PS1LED1)
@@ -252,46 +301,43 @@ class SI1145(object):
         # Take 511 clocks to measure
         self.writeParam(SI1145_PARAM_PSADCOUNTER, SI1145_PARAM_ADCCOUNTER_511CLK)
 
-        # in prox mode, high range
-        self.writeParam(SI1145_PARAM_PSADCMISC, SI1145_PARAM_PSADCMISC_RANGE | SI1145_PARAM_PSADCMISC_PSMODE)
-        self.writeParam(SI1145_PARAM_ALSIRADCMUX, SI1145_PARAM_ADCMUX_SMALLIR)
-
-        # Fastest clocks, clock div 1
-        self.writeParam(SI1145_PARAM_ALSIRADCGAIN, 0)
-
-        # Take 511 clocks to measure
-        self.writeParam(SI1145_PARAM_ALSIRADCOUNTER, SI1145_PARAM_ADCCOUNTER_511CLK)
-
-        # in high range mode
-        self.writeParam(SI1145_PARAM_ALSIRADCMISC, SI1145_PARAM_ALSIRADCMISC_RANGE)
-
-        # fastest clocks, clock div 1
-        self.writeParam(SI1145_PARAM_ALSVISADCGAIN, 0)
-
-        # Take 511 clocks to measure
-        self.writeParam(SI1145_PARAM_ALSVISADCOUNTER, SI1145_PARAM_ADCCOUNTER_511CLK)
-
-        # in high range mode (not normal signal)
-        self.writeParam(SI1145_PARAM_ALSVISADCMISC, SI1145_PARAM_ALSVISADCMISC_VISRANGE)
-
-        # measurement rate for auto
-        self._device.write8(SI1145_REG_MEASRATE0, 0xFF)  # 255 * 31.25uS = 8ms
-
-        # auto run
-        self._device.write8(SI1145_REG_COMMAND, SI1145_PSALS_AUTO)
+    def init_IR_interrupt(self):
+        # Enable interrupt on every sample
+        self._device.write8(SI1145_REG_INTCFG, SI1145_REG_INTCFG_INTOE)
+        self._device.write8(SI1145_REG_IRQEN, SI1145_REG_IRQEN_ALSEVERYSAMPLE)
 
     # returns the UV index * 100 (divide by 100 to get the index)
     def readUV(self):
+        # readU16LE auto increments the address to read both bytes
         return self._device.readU16LE(0x2C)
 
     # returns visible + IR light levels
     def readVisible(self):
+        # readU16LE auto increments the address to read both bytes
         return self._device.readU16LE(0x22)
 
     # returns IR light levels
     def readIR(self):
+        # readU16LE auto increments the address to read both bytes
         return self._device.readU16LE(0x24)
 
     # Returns "Proximity" - assumes an IR LED is attached to LED
     def readProx(self):
+        # readU16LE auto increments the address to read both bytes
         return self._device.readU16LE(0x26)
+
+
+# Example Usage
+if __name__ == "__main__":
+    sensor = SI1145()
+    print('Ctrl+C or Ctrl+Z to cancel')
+    time.sleep(1)
+
+    while True:
+        vis = sensor.readVisible()
+        IR = sensor.readIR()
+        UV = sensor.readUV()
+        uvIndex = UV / 100.0
+        print('VIS:%.2f \t IR:%.2f \t UV:%.2f' % (vis, IR, uvIndex))
+
+        time.sleep(0.1)  # 100ms
