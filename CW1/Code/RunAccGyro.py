@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
         # raw values
         print("\rX: %.6f\tY: %.6f\tZ: %.6f" % (x, y, z))
-        sleep(0.1)
+        sleep(0.05)
 
     # click sensor if polling & not using interrupt
     #        click = sensor.getClick()
