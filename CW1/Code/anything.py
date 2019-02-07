@@ -24,9 +24,20 @@ package = json.dumps(data)
 '''
 
 import paho.mqtt.client as mqtt
+import time
 
 client = mqtt.Client(client_id="skad00sh")
 
 if client.connect("iot.eclipse.org", port=443) == 0:
-    mqtt.error_string(client.publish(topic="hworld", payload="msg", qos=1).rc)
+    client.loop_start()
+    print("Subscribing...")
+    client.subscribe("hworld")
+    time.sleep(2)
+
+    print("Publishing...")
+    print(mqtt.error_string(client.publish(topic="hworld", payload="msg", qos=1).rc))
+
+    time.sleep(2)
+    client.loop_stop()
+    client.disconnect()
 
