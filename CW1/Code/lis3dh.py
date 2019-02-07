@@ -31,7 +31,7 @@ TODO
 Implementation Notes
 --------------------
 
-**Hardware:**
+**Hardware:*,*
 
 **Software and Dependencies:**
 

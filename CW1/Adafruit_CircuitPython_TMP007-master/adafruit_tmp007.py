@@ -45,10 +45,8 @@ import time
 from micropython import const
 from adafruit_bus_device.i2c_device import I2CDevice
 
-
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_TMP007.git"
-
 
 # Default device I2C address.
 _TMP007_I2CADDR = const(0x40)
@@ -82,8 +80,6 @@ class TMP007:
     # thread safe!
     _BUFFER = bytearray(4)
 
-
-
     def __init__(self, i2c, address=_TMP007_I2CADDR, samplerate=CFG_16SAMPLE):
         """Initialize TMP007 device on the specified I2C address and bus number.
         Address defaults to 0x40 and bus number defaults to the appropriate bus
@@ -100,7 +96,7 @@ class TMP007:
         if samplerate not in (CFG_1SAMPLE, CFG_2SAMPLE, CFG_4SAMPLE, CFG_8SAMPLE,
                               CFG_16SAMPLE):
             raise ValueError('Unexpected samplerate value! Must be one of: ' \
-                'CFG_1SAMPLE, CFG_2SAMPLE, CFG_4SAMPLE, CFG_8SAMPLE, or CFG_16SAMPLE')
+                             'CFG_1SAMPLE, CFG_2SAMPLE, CFG_4SAMPLE, CFG_8SAMPLE, or CFG_16SAMPLE')
         # Set configuration register to turn on chip, enable data ready output,
         # and start sampling at the specified rate.
         config = _TMP007_CFG_MODEON | _TMP007_CFG_DRDYEN | samplerate
@@ -160,8 +156,7 @@ class TMP007:
 
     def read_register(self, register):
         """Read sensor Register."""
-        return  self._read_u16(register)
-
+        return self._read_u16(register)
 
     def _read_u8(self, address):
         with self._device as i2c:
@@ -175,7 +170,7 @@ class TMP007:
             self._BUFFER[0] = address & 0xFF
             i2c.write(self._BUFFER, end=1, stop=False)
             i2c.readinto(self._BUFFER, end=2)
-        return self._BUFFER[0]<<8 | self._BUFFER[1]
+        return self._BUFFER[0] << 8 | self._BUFFER[1]
 
     def _write_u8(self, address, val):
         with self._device as i2c:
