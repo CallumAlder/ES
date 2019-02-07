@@ -16,3 +16,4 @@ vis = sensor.readVisible()
 data = {"IR": ir, "UV": uv, "Visible": vis}
 package = json.dumps(data)
 
+# do another thing and then push it
