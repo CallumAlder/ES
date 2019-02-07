@@ -46,7 +46,8 @@ Implementation Notes
 
 #//////////////////// imports /////////////////////////////////////////////////
 from machine import Pin, I2C
-import utime
+#  changed from import utime
+import time
 import ujson
 import math
 
@@ -129,7 +130,7 @@ divider = 1 # depends on range. Acceleration in g = sensor data / divider
 
 global_distance = 0
 global_steps = 0
-step_timer_start = utime.time()
+step_timer_start = time.time()
 
 
 
@@ -348,9 +349,9 @@ def get_steps():
     global global_distance
     global global_steps
     global step_timer_start
-    if step_detected(raw_data) == True and utime.time() - step_timer_start >= STEP_MIN_INTERVAL:
+    if step_detected(raw_data) == True and time.time() - step_timer_start >= STEP_MIN_INTERVAL:
         global_steps += 1
-        step_timer_start = utime.time()  # reset step timer
+        step_timer_start = time.time()  # reset step timer
 
     return global_steps
 
