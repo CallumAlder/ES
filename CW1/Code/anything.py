@@ -23,7 +23,7 @@ package = json.dumps(data)
 # pushed again gg
 '''
 
-import paho.mqtt as mqtt
+import paho.mqtt.client as mqtt
 
 client = mqtt.Client(client_id="skad00sh")
 
