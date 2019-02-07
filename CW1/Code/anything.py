@@ -28,5 +28,5 @@ import paho.mqtt.client as mqtt
 client = mqtt.Client(client_id="skad00sh")
 
 if client.connect("iot.eclipse.org", port=443) == 0:
-    mqtt.error_string(client.publish("hworld", "msg").rc)
+    mqtt.error_string(client.publish(topic="hworld", payload="msg", qos=1).rc)
 
