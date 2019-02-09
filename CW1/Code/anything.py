@@ -32,12 +32,12 @@ if client.connect("iot.eclipse.org", port=443) == 0:
     client.loop_start()
     print("Subscribing...")
     client.subscribe("hworld")
-    time.sleep(2)
+    time.sleep(0.5)
 
     print("Publishing...")
     print(mqtt.error_string(client.publish(topic="hworld", payload="msg", qos=1).rc))
 
-    time.sleep(2)
+    time.sleep(0.5)
     client.loop_stop()
     client.disconnect()
 
