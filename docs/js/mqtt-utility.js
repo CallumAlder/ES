@@ -131,9 +131,9 @@ function connect() {
 
 
   if (path.length > 0) {
-    client = new Paho.Client(hostname, Number(port), path, clientId);
+    client = new Paho.MQTT.Client(hostname, Number(port), path, clientId);
   } else {
-    client = new Paho.Client(hostname, Number(port), clientId);
+    client = new Paho.MQTT.Client(hostname, Number(port), clientId);
   }
   logMessage("INFO", "Connecting to Server: [Host: ", hostname, ", Port: ", port, ", Path: ", client.path, ", ID: ", clientId, "]");
 
@@ -165,7 +165,7 @@ function connect() {
   }
 
   if (lastWillTopic.length > 0) {
-    var lastWillMessage = new Paho.Message(lastWillMessageVal);
+    var lastWillMessage = new Paho.MQTT.Message(lastWillMessageVal);
     lastWillMessage.destinationName = lastWillTopic;
     lastWillMessage.qos = lastWillQos;
     lastWillMessage.retained = lastWillRetain;
@@ -234,7 +234,7 @@ function publish() {
   var message = document.getElementById("publishMessageInput").value;
   var retain = document.getElementById("publishRetainInput").checked;
   logMessage("INFO", "Publishing Message: [Topic: ", topic, ", Payload: ", message, ", QoS: ", qos, ", Retain: ", retain, "]");
-  message = new Paho.Message(message);
+  message = new Paho.MQTT.Message(message);
   message.destinationName = topic;
   message.qos = Number(qos);
   message.retained = retain;
