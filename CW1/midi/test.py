@@ -13,12 +13,12 @@ pi1.set_mode(buttPin, pigpio.INPUT)
 
 def buttonDown(gpio, level, tick):
     print("DOWN")
-    outport.send(onmess)
+    #outport.send(onmess)
 
 
 def buttonUp(gpio, level, tick):
     print("UP")
-    outport.send(offmess)
+    #outport.send(offmess)
 
 
 cb = pi1.callback(buttPin, pigpio.RISING_EDGE, buttonDown)
