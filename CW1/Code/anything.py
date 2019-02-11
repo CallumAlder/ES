@@ -69,17 +69,20 @@ if X == 0:
     # client.on_connect = on_connect
     client.loop_start()
     print("Subscribing...")
+
     # client.subscribe("BRX/EdB/")
     # client.subscribe("hworld")
     # client.subscribe("EdB/A")
     # time.sleep(0.5)
+
+    client.subscribe("hworld")
+    time.sleep(0.5)
 
     print("Publishing...")
     client.publish(topic="world", payload="msgMsg4GdLuck", qos=1)
     print(mqtt.error_string(client.publish(topic="world", payload=b'msg', qos=1).rc))
 
     time.sleep(2)
-
     client.loop_stop()
     client.disconnect()
 else:
