@@ -103,6 +103,12 @@ function onMessageArrived(message) {
     lastMessageRow.cells[2].innerHTML = messageTime;
     lastMessageRow.cells[3].innerHTML = message.qos;
   }
+  
+  // Call KnobUpdater function
+  if ( (message.destinationName) == "IC.embedded/skadoosh/sensor") {
+    knobUpdater(message.payloadString);
+
+  }  
 
 }
 

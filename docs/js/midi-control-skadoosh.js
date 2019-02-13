@@ -193,12 +193,82 @@ function getPosition(el) {
   
 }
 
-// Helper function that gets the values for all knob values
+// Helper function that gets the values for all knob values and returns a comma separated string
+var NUM_KNOBS = 2;
 function getKnobValues() {
-  var newMessage = "";
-  newMessage += String(Math.floor(127* $(document.querySelector('#knob1')).attr('data-x') /360));
-  newMessage +- ", ";
-  newMessage += String(Math.floor(127* $(document.querySelector('#knob2')).attr('data-x') /360));
+
+  var knobValues = new Array(NUM_KNOBS);
+  
+  // Get values from all the knobs
+  for(var i=0; i<NUM_KNOBS; i++) { 
+    knobValues[i] = Number($(document.querySelector('#knob'+String(i+1))).attr('data-x'));
+  }
+
+  // Convert all the values to the correct range - i.e. 0-127
+  var knobValuesScaled = knobValues.map(function(element) {
+	return Math.floor(127*element/360);
+  });
+  
+  // Convert the array to comma separated string
+  var newMessage =knobValuesScaled.toString();
   return newMessage;
 }
+
+var SENSOR_TO_KNOB = new Array(NUM_KNOBS); // SENSOR_TO_KNOB[0] = 3; Means Knob 1 (0+1) is assigned to the 3rd sensor data (0 indexed)
+// Default it -1 - manual mode
+for(var i=0; i<NUM_KNOBS; i++) { 
+  SENSOR_TO_KNOB[i] = Number(-1);
+}
+function knobUpdater(sensorDataMsg){
+//  var sensorArray = sensorDataMsg.split(',');
+//  var json = '{"result":true, "count":42}';
+  var jsonDATA = JSON.parse(sensorDataMsg);
+  sensorArray[0] = parseInt(jsonDATA.xGy);
+  sensorArray[1] = parseInt(jsonDATA.yGy);
+  sensorArray[2] = parseInt(jsonDATA.zGy);
+  sensorArray[3] = parseInt(jsonDATA.prx);
+  
+  // Get values from all the knobs
+  for(var i=0; i<NUM_KNOBS; i++) { 
+    if (SENSOR_TO_KNOB[i] >= 0) {
+      logMessage( "Updating Knob: " + (i+1) + "with: " + parseInt(sensorArray[SENSOR_TO_KNOB[i]]) );
+      progressBarUpdate(parseInt(sensorArray[SENSOR_TO_KNOB[i]]),360,('#knob'+String(i+1)));
+
+    }
+  }
+  
+}
+
+
+$('.dropdown-menu a').click(function(event){
+  logMessage("You what " + event.target.parentNode.id);
+  var dropDownInfo = (event.target.parentNode.id).split(''); // get's id that contains the object clicked
+  var dd_knobNum = String(Number(dropDownInfo[4]+dropDownInfo[5]));
+  var dd_knobType = (dropDownInfo[7]+dropDownInfo[8]+dropDownInfo[9]);
+  if  ( dd_knobType == "man" ) {
+        logMessage("You what " + dd_knobNum + "= " + dd_knobType );
+        SENSOR_TO_KNOB[Number(dd_knobNum-1)] = -1;
+        knobUpdater("50,11,12,13");
+       } 
+  else if  ( dd_knobType == "xGy" ) {
+        logMessage("You what " + dd_knobNum + "= " + dd_knobType );
+        SENSOR_TO_KNOB[Number(dd_knobNum-1)] = 0;
+     } 
+  else if  ( dd_knobType == "yGy" ) {
+        logMessage("You what " + dd_knobNum + "= " + dd_knobType );
+        SENSOR_TO_KNOB[Number(dd_knobNum-1)] = 1;
+     } 
+  else if  ( dd_knobType == "zGy" ) {
+        logMessage("You what " + dd_knobNum + "= " + dd_knobType );
+        SENSOR_TO_KNOB[Number(dd_knobNum-1)] = 2;
+     } 
+  else if  ( dd_knobType == "prx" ) {
+        logMessage("You what " + dd_knobNum + "= " + dd_knobType );
+        SENSOR_TO_KNOB[Number(dd_knobNum-1)] = 3;
+     } 
+  else {
+      logMessage("I see that: " + dd_knobNum  + " & " + dd_knobType);
+  }
+    
+});
 
