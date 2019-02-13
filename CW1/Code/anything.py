@@ -26,18 +26,64 @@ package = json.dumps(data)
 import paho.mqtt.client as mqtt
 import time
 
-client = mqtt.Client(client_id="skad00sh")
+def on_publish(client, userdata, mid):
+   print("mid: "+str(mid))
 
-if client.connect("iot.eclipse.org", port=443) == 0:
+def on_message(client, userdata, msg):
+   print("msg: " + str(msg.payload.decode()))
+   # print(client.__dict__)
+
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code "+str(rc))
+
+    # Subscribing in on_connect() means that if we lose the connection and
+    # reconnect then subscriptions will be renewed.
+    # client.subscribe("$SYS/#")
+    # client.subscribe("EdB/A")
+    client.subscribe("world")
+
+
+broker = "iot.eclipse.org"
+
+# broker = "localhost"; port = 1883
+# broker = "test.mosquitto.org"; port = 1883
+port = 1883
+
+# client = mqtt.Client(client_id="skad00sh")
+client = mqtt.Client()
+client.on_publish = on_publish
+client.on_message = on_message
+client.on_connect = on_connect
+
+# client.tls_set(ca_certs="mosquitto.org.crt",
+#                certfile="client.crt",
+#                keyfile="client.key")
+# client.tls_set("eclipse-cert.pem",tls_version=ssl.PROTOCOL_TLSv1_2)
+
+X = client.connect(broker, port=port)
+print(X)
+time.sleep(0.25)
+if X == 0:
+    # client.on_publish = on_publish
+    # client.on_message = on_message
+    # client.on_connect = on_connect
     client.loop_start()
     print("Subscribing...")
+
+    # client.subscribe("BRX/EdB/")
+    # client.subscribe("hworld")
+    # client.subscribe("EdB/A")
+    # time.sleep(0.5)
+
     client.subscribe("hworld")
     time.sleep(0.5)
 
     print("Publishing...")
-    print(mqtt.error_string(client.publish(topic="hworld", payload="msg", qos=1).rc))
+    client.publish(topic="world", payload="msgMsg4GdLuck", qos=1)
+    print(mqtt.error_string(client.publish(topic="world", payload=b'msg', qos=1).rc))
 
-    time.sleep(0.5)
+    time.sleep(2)
     client.loop_stop()
     client.disconnect()
-
+else:
+    print("Pas de connexion")
