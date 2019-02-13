@@ -1,0 +1,107 @@
+*, *:after, *:before {
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-animation-fill-mode: both; /* Chrome, Safari, Opera */
+    animation-fill-mode: both
+}
+.pie {
+    background-color:#161616;
+    margin:30px;
+    width:200px;
+    height:200px;
+    -moz-border-radius:100px;
+    -webkit-border-radius:100px;
+    border-radius:50%;
+    position:relative;
+    overflow:hidden;
+}
+.clip1 {
+    position:absolute;
+    top:0;
+    left:0;
+    width:200px;
+    height:200px;
+    clip:rect(0px, 200px, 200px, 100px);
+    box-shadow:0 2px 2px rgba(0,0,0,0.2) inset;
+    border-radius:50%;
+}
+.slice1 {
+    position:absolute;
+    width:200px;
+    height:200px;
+    clip:rect(0px, 100px, 200px, 0px);
+    -moz-border-radius:100px;
+    -webkit-border-radius:100px;
+    border-radius:100px;
+    background-color:#4f837f;
+    border-color:#f7e5e1;
+    -moz-transform:rotate(0);
+    -webkit-transform:rotate(0);
+    -o-transform:rotate(0);
+    transform:rotate(0);
+    transition:all 0.3s linear 0s;
+}
+.clip2 {
+    position:absolute;
+    top:0;
+    left:0;
+    width:200px;
+    height:200px;
+    clip:rect(0, 100px, 200px, 0px);
+    box-shadow:0 2px 2px rgba(0,0,0,0.2) inset;
+    border-radius:50%;
+}
+.slice2 {
+    position:absolute;
+    width:200px;
+    height:200px;
+    clip:rect(0px, 200px, 200px, 100px);
+    -moz-border-radius:100px;
+    -webkit-border-radius:100px;
+    border-radius:100px;
+    background-color:#4f837f;
+    border-color:#f7e5e1;
+    -moz-transform:rotate(0);
+    -webkit-transform:rotate(0);
+    -o-transform:rotate(0);
+    transform:rotate(0);
+    transition:all 0.3s linear 0.3s;
+}
+.status {
+    position:absolute;
+    height:30px;
+    width:100%;
+    line-height:60px;
+    text-align:center;
+    top:50%;
+    margin-top:-35px;
+    font-size:16px;
+    font-family:verdana;
+}
+
+.inner {
+    position:absolute;
+    height:80%;
+    width:80%;
+    line-height:60px;
+    text-align:center;
+    top:50%;
+    left:50%;
+    margin-top:-40%;
+    margin-left:-40%;
+    background:#fff;
+    border-radius:100%;
+    box-shadow:0 2px rgba(0,0,0,0.2), 0 -100px 50px -50px rgba(0,0,0,0.1) inset;
+}
+
+.outer {
+  position:absolute;
+  border-radius:50%;
+  width:100%;
+  height:100%;
+  top:0;
+  left:0;
+  box-shadow:0 5px 5px rgba(0,0,0,0.3) inset;
+  //border:3px solid slateblue;
+}

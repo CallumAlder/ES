@@ -20,7 +20,9 @@
 
     <!-- Custom styles for this template -->
     <link href="css/grayscale.min.css" rel="stylesheet">
-
+    
+    <!--  Custom MIDI Controller CSS  -->
+     <link href="css/midi-control.css" rel="stylesheet">
   </head>
 
   <body id="page-top">
@@ -80,13 +82,13 @@
       </div>
     </section>
 
-    <!-- MQTT APP Section -->
-    <section id="mqtt" class="projects-section text-center">
+
+    <!-- Skadoosh MQTT APP Section -->
+    <section id="mqtt-skadoosh" class="project-section text-center">
       <div class="container">
         <div class="row">
           <div class="col-lg-12 mx-auto">
-            <h2>MQTT App</h2>
-            <p class="text-black-50 mb-0"> Sciences</p>
+            <h2>Skadoosh MIDI MQTT App</h2>
           </div>
         </div>
               <!-- Connection panel -->
@@ -94,128 +96,23 @@
                 <div class="col-lg-12 mx-auto">
                   <div class="panel panel-default">
                     <div class="panel-heading">
-                      <span id="connectionStatus">Connection - Disconnected.</span>
+                      <span id="connectionStatus" style="color:darkred">Connection - Disconnected.</span>
                     </div>
                     <div class="panel-body" id="serverCollapse">
+                      
                       <form>
-                          
+                        
                         <div class="row">
-
-                          <div class="col-lg-5">
-                            <div class="form-group">
-                              <label for="hostInput">Host</label>
-                              <input type="text" class="form-control" id="hostInput" value="iot.eclipse.org">
-                            </div>
-                          </div>
-                          <div class="col-lg-1">
-                            <div class="form-group">
-                              <label for="portInput">Port</label>
-                              <input type="text" class="form-control" id="portInput" value="443">
-                            </div>
-
-                          </div>
-                          <div class="col-lg-4">
-                            <div class="form-group">
-                              <label for="clientIdInput">Client ID</label>
-                              <input type="text" class="form-control" id="clientIdInput" value="javascript-client">
-                            </div>
-                          </div>
-                          <div class="col-lg-1">
+                          
+                          <div class="col-lg-12 text-center">
                             <div class="form-group">
                               <label for="clientConnectButton"></label>
                               <a id="clientConnectButton" class="btn btn-default" onclick="connectionToggle();">Connect</a>
                             </div>
                           </div>
                         </div>
-                          <div class="row">
 
-                          <div class="col-lg-2">
-                            <div class="form-group">
-                              <label for="pathInput">Path</label>
-                              <input type="text" class="form-control" id="pathInput" value="/ws">
-                            </div>
-                          </div>
-                          <div class="col-lg-2">
-                            <div class="form-group">
-                              <label for="userInput">Username</label>
-                              <input type="text" class="form-control" id="userInput">
-                            </div>
-                          </div>
-
-                          <div class="col-lg-2">
-                            <div class="form-group">
-                              <label for="passInput">Password</label>
-                              <input type="password" class="form-control" id="passInput">
-                            </div>
-                          </div>
-
-                          <div class="col-lg-1">
-                            <div class="form-group">
-                              <label for="keepAliveInput">Keepalive</label>
-                              <input type="text" class="form-control" id="keepAliveInput" value="60">
-                            </div>
-                          </div>
-
-                          <div class="col-lg-1">
-                            <div class="form-group">
-                              <label for="timeoutInput">Timeout</label>
-                              <input type="text" class="form-control" id="timeoutInput" value="3">
-                            </div>
-                          </div>
-
-                          <div class="col-lg-1">
-                            <div class="form-group">
-                              <label for="tlsInput">TLS</label>
-                              <input type="checkbox" class="special-checkbox" id="tlsInput" value="" checked>
-                            </div>
-                          </div>
-                          <div class="col-lg-1">
-                            <div class="form-group">
-                              <label for="cleanSessionInput">Clean Session</label>
-                              <input type="checkbox" class="special-checkbox" id="cleanSessionInput" value="" checked>
-                            </div>
-
-                          </div>
-                          <div class="col-lg-1">
-                            <div class="form-group">
-                              <label for="automaticReconnectInput">Automatic Reconnect</label>
-                              <input type="checkbox" class="special-checkbox" id="automaticReconnectInput" value="" checked>
-                            </div>
-                          </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                          <div class="col-lg-3">
-                            <div class="form-group">
-                              <label for="lwtInput">Last Will Topic</label>
-                              <input type="text" class="form-control" id="lwtInput">
-                            </div>
-                          </div>
-
-                          <div class="col-lg-1">
-                            <div class="form-group">
-                              <label for="lwQosInput">QoS</label>
-                              <select class="form-control" id="lwQosInput">
-                                <option>0</option>
-                                <option>1</option>
-                                <option>2</option>
-                              </select>
-                            </div>
-                          </div>
-                          <div class="col-lg-1">
-                            <div class="form-group">
-                              <label for="lwRetainInput">Retain</label>
-                              <input type="checkbox" class="special-checkbox" id="lwRetainInput" value="">
-                            </div>
-                          </div>
-                          <div class="col-lg-7">
-                            <div class="form-group">
-                              <label for="lwMInput">Last Will Message</label>
-                              <textarea class="form-control" id="lwMInput" rows="3"></textarea>
-                            </div>
-                          </div>
-                        </div>
-                          
+                        <hr>                         
 
                     </form>
                     </div>
@@ -224,100 +121,46 @@
             </div>
       <!-- End Connection -->
 
-
-      <div class="row ">
-        <!-- Subscription panel -->
-        <div class="col-lg-6 mx-auto">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              Subscribe
+      <!-- Main App Section should go here -->
+      <div  class="row ">
+        <div id="knob1_container" class="col-lg-3 text-center">
+        <div id="knob1" class="pie" data-x="0" >
+            <div class="clip1">
+                <div class="slice1" id="knob1_slice1"></div>
             </div>
-            <div class="panel-body" id="subscribeCollapse">
-
-              <form class="form-horizontal">
-
-                <div class="form-group">
-                  <label for="subscribeTopicInput" class="col-sm-2 control-label">Topic</label>
-                  <div class="col-sm-10">
-                    <input type="text" class="form-control" id="subscribeTopicInput" value="world" disabled>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="subscribeQosInput" class="col-sm-2 control-label">QoS</label>
-                  <div class="col-sm-10">
-                    <select class="form-control" id="subscribeQosInput" disabled>
-                      <option>0</option>
-                      <option>1</option>
-                      <option>2</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <div class="col-sm-offset-2 col-sm-10">
-                    <button id="subscribeButton" type="button" class="btn btn-default" onclick="subscribe();" disabled>Subscribe</button>
-                    <button id="unsubscribeButton" type="button" class="btn btn-default" onclick="unsubscribe();" disabled>Unsubscribe</button>
-                  </div>
-                </div>
-              </form>
+            <div class="clip2">
+                <div class="slice2" id="knob1_slice2"></div>
             </div>
-          </div>
+            <div class="inner">
+              <div class="status" id="knob1_status"></div>
+            </div>
+            <div class="outer">
+            </div>
         </div>
-        <!-- End of Subscription panel -->
-        <!-- Publish panel -->
-        <div class="col-lg-6 mx-auto">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              Publish Message
-            </div>
-            <div class="panel-body" id="publishCollapse">
-              <form >
-                <div class="row">
-                  <div class="col-lg-5">
-                    <div class="form-group">
-                      <label for="publishTopicInput">Topic</label>
-                        <input type="text" class="form-control" id="publishTopicInput" value="world" disabled>
-                    </div>
-                  </div>
-                  <div class="col-lg-3">
-                    <div class="form-group">
-                      <label for="publishQosInput">QoS</label>
-                        <select class="form-control" id="publishQosInput" disabled>
-                          <option>0</option>
-                          <option>1</option>
-                          <option>2</option>
-                        </select>
-                    </div>
-                  </div>
-                  <div class="col-lg-1">
-                    <div class="form-group">
-                      <label for="publishRetainInput">Retain</label>
-                      <input type="checkbox" class="special-checkbox" id="publishRetainInput" value="" disabled>
-                    </div>
-                  </div>
-                  <div class="col-lg-1">
-                    <div class="form-group">
-                      <label for="publishButton"></label>
-                      <button id="publishButton" type="button" class="btn btn-default" onclick="publish();" disabled>Publish</a>
-                    </div>
-                  </div>
-
-
-                </div>
-
-                <div class="row">
-                  <div class="col-lg-12">
-                  <div class="form-group">
-                    <label for="publishMessageInput">Message</label>
-                    <textarea class="form-control" id="publishMessageInput" rows="3"></textarea>
-                  </div>
-                </div>
-                </div>
-              </form>
-            </div>
-          </div>
         </div>
-        <!-- End of Publish panel -->
+
+       <div id="contentContainer" class="col-lg-6 text-center">
+                          <div class="debug">
+                </div>
+        </div>
+        <div id="llll" class="col-lg-3 text-center">
+        <div id="knob2" class="pie" data-x="0" >
+            <div class="clip1">
+                <div class="slice1" id="knob2_slice1"></div>
+            </div>
+            <div class="clip2">
+                <div class="slice2" id="knob2_slice2"></div>
+            </div>
+            <div class="inner">
+              <div class="status" id="knob2_status"></div>
+            </div>
+            <div class="outer">
+            </div>
+        </div>
+        </div>
+
       </div>
+        
 
       <!-- Display Panels -->
       <div class="row">
@@ -393,8 +236,6 @@
      
             </div>
     </section>
-
-
     <!-- Footer -->
     <footer class="bg-black small text-center text-white-50">
       <div class="container">
@@ -424,8 +265,12 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script> -->
 
     <!-- MQTT Utility Javascript -->
-  <script src="js/mqtt-utility.js"></script>
-
+<!--  <script src="js/mqtt-utility.js"></script>-->
+  <script src="js/mqtt-skadoosh.js"></script>
+  
+      <!-- MIDI Control Javascript -->
+<!--  <script src="js/mqtt-utility.js"></script>-->
+  <script src="js/midi-control-skadoosh.js"></script>
   </body>
 
 </html>
