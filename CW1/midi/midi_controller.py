@@ -2,7 +2,6 @@ import logging
 import sys
 import time
 from os.path import exists
-
 from gpiozero import LED, Button
 import rtmidi
 from rtmidi.midiutil import open_midioutput
@@ -15,9 +14,6 @@ from rtmidi.midiconstants import (
   CHANNEL_PRESSURE,
   PITCH_BEND
 )
-
-
-
 
 
 log = logging.getLogger('pyFootController')
@@ -98,7 +94,6 @@ def main():
       
       # Toggle behaviour (Press=ON, Press again=OFF)
       # footcontroller.btn5.when_pressed = lambda : footcontroller.sendMIDI(type=CONTROLLER_CHANGE, channel=0x50)
-
       
       # Usually free MIDI Channels:
       # 0x50, 0x51, 0x52, 0x53, 0x55, 0X56, 0X57, 0X59, 0X5A, 
@@ -110,7 +105,6 @@ def main():
   finally:
     del footcontroller
     del midiout
-
 
 if __name__ == '__main__':
   sys.exit(main())
