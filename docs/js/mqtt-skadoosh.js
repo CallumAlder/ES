@@ -83,8 +83,7 @@ function onMessageArrived(message) {
   row.insertCell(1).innerHTML = safeTagsRegex(message.payloadString);
   row.insertCell(2).innerHTML = messageTime;
   row.insertCell(3).innerHTML = message.qos;
-
-
+  
   if (!document.getElementById(message.destinationName)) {
     var lastMessageTable = document.getElementById("lastMessageTable").getElementsByTagName("tbody")[0];
     var newlastMessageRow = lastMessageTable.insertRow(0);
@@ -104,10 +103,9 @@ function onMessageArrived(message) {
     lastMessageRow.cells[3].innerHTML = message.qos;
   }
   
-  // Call KnobUpdater function
+    // Call KnobUpdater function in midi-control.js
   if ( (message.destinationName) == "IC.embedded/skadoosh/sensor") {
     knobUpdater(message.payloadString);
-
   }  
 
 }

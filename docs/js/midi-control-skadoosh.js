@@ -221,19 +221,21 @@ for(var i=0; i<NUM_KNOBS; i++) {
 }
 function knobUpdater(sensorDataMsg){
 //  var sensorArray = sensorDataMsg.split(',');
-//  var json = '{"result":true, "count":42}';
+
   var jsonDATA = JSON.parse(sensorDataMsg);
+  var sensorArray = new Array(4);
   sensorArray[0] = parseInt(jsonDATA.xGy);
   sensorArray[1] = parseInt(jsonDATA.yGy);
   sensorArray[2] = parseInt(jsonDATA.zGy);
   sensorArray[3] = parseInt(jsonDATA.prx);
-  
+  console.log(sensorArray);
   // Get values from all the knobs
   for(var i=0; i<NUM_KNOBS; i++) { 
     if (SENSOR_TO_KNOB[i] >= 0) {
       logMessage( "Updating Knob: " + (i+1) + "with: " + parseInt(sensorArray[SENSOR_TO_KNOB[i]]) );
-      progressBarUpdate(parseInt(sensorArray[SENSOR_TO_KNOB[i]]),360,('#knob'+String(i+1)));
-
+      if (sensorArray[SENSOR_TO_KNOB[i]]>=0){
+        progressBarUpdate(parseInt(360*sensorArray[SENSOR_TO_KNOB[i]]/127),360,('#knob'+String(i+1))); 
+      }
     }
   }
   
