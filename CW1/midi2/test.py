@@ -14,7 +14,7 @@ parser.add_argument('-d', '--debug', help='show midi message',
 args = parser.parse_args()
 
 # Set MIDI port
-midiin = rtmidi.MidiIn()
+midiin = rtmidi.RtMidiIn()
 midiin.open_virtual_port("UART_MIDI_OUT")  # Virtual MIDI
 ser = serial.Serial('/dev/ttyAMA0', baudrate=38400)  # Open serial at 38400bps
 midiin.ignore_types(sysex=False, timing=True, active_sense=True)
