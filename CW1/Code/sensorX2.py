@@ -20,12 +20,17 @@ GPIO.set_mode(SUCCESS_LED, pigpio.OUTPUT)
 FAIL_LED = 16
 GPIO.set_mode(FAIL_LED, pigpio.OUTPUT)
 
+CHANGE_LED = 26
+GPIO.set_mode(CHANGE_LED, pigpio.OUTPUT)
+
 print("Testing LEDS...")
 GPIO.write(SUCCESS_LED, 1)
 GPIO.write(FAIL_LED, 1)
+GPIO.write(CHANGE_LED, 1)
 time.sleep(2)
 GPIO.write(SUCCESS_LED, 0)
 GPIO.write(FAIL_LED, 0)
+GPIO.write(CHANGE_LED, 0)
 
 def on_publish(client, userdata, mid):
    print("mid: "+ str(mid))
@@ -34,17 +39,19 @@ def on_message(client, userdata, msg):
    msg = str(msg.payload.decode())
    print("msg: " + msg)
 
-   if msg == "lol@cig":
-       print("Turn success LED on...")
-       GPIO.write(SUCCESS_LED, 1)
+   if msg == "map@chg":
+       print("Turn change LED on...")
+       GPIO.write(CHANGE_LED, 1)
        time.sleep(2)
-       GPIO.write(SUCCESS_LED, 0)
-   return msg
-
+       GPIO.write(CHANGE_LED, 0)
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code: " + str(rc))
     client.subscribe("IC.embedded/skadoosh/midi")
+
+    GPIO.write(SUCCESS_LED, 1)
+    time.sleep(2)
+    GPIO.write(SUCCESS_LED, 0)
 
 def extract_data(s_data):
     s_data = s_data.replace("b", "")
@@ -52,7 +59,6 @@ def extract_data(s_data):
     s_data = s_data.split(",")
 
     json_data = {"prx": s_data[0], "xGy": s_data[1], "yGy": s_data[2], "zGy": s_data[3]}
-
     # print("JSON Data:", json_data)
     return json_data
 
@@ -294,6 +300,9 @@ if __name__ == '__main__':
 
     else:
         print("Pas de connexion")
+        GPIO.write(FAIL_LED, 1)
+        time.sleep(2)
+        GPIO.write(FAIL_LED, 0)
 
     client.loop_stop()
     client.disconnect()
