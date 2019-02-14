@@ -18,10 +18,12 @@ var knobHandler = function (knobID,containerID) {
        var cx = $(this).width()/2;
        var cy = $(this).height()/2;
        var angle = getAngle(cx, cy, ex, ey,90);
-       $('.debug').text(ex + ' ' + ey + ' ' + cx  + ' ' + cy + ' DEG: ' + angle
-        + $(this).offset().left + ' ' + $(this).offset().top + ' ' + ex2 + ' ' + ey2
-      //                        + xPosition + ' ' + yPosition
-                       );
+      // Debug angle - send to console
+//       console.log(ex + ' ' + ey + ' ' + cx  + ' ' + cy + ' DEG: ' + angle
+//        + $(this).offset().left + ' ' + $(this).offset().top + ' ' + ex2 + ' ' + ey2
+//        //                      + xPosition + ' ' + yPosition
+//                       );
+     
        progressBarUpdate(parseInt(angle),360,knobID);
   };
 };
@@ -152,7 +154,6 @@ function progressBarUpdate(x, outOf,knobID) {
     if (knobID == 0) {
         $(".status").html(midiRangeX + "/" + midiRangeOutOf);
     } else {
-
         $(document.querySelector((knobID+"_status"))).html(midiRangeX + "/" + midiRangeOutOf);
     }
 
@@ -283,6 +284,21 @@ $('.dropdown-menu a').click(function(event){
   else {
       logMessage("I see that: " + dd_knobNum  + " & " + dd_knobType);
   }
+  
+//  console.log(document.getElementById("knob"+(dd_knobNum)+"_setting").innerHTML)
+//  console.log(("knob"+(dd_knobNum)+"_"+dd_knobType))
+  document.getElementById("knob"+(dd_knobNum)+"_setting").innerHTML = document.getElementById("knob"+zeroPad(Number(dd_knobNum),2)+"_"+dd_knobType).innerHTML;
+//   $(document.querySelector(("#knob"+(dd_knobNum)+"_setting"))).html($(document.querySelector(("#knob"+(dd_knobNum)+dd_knobType))).html);
     
 });
 
+// num = a number, numZeros = number of digits final output should have
+function zeroPad (num, numZeros) {
+    var an = Math.abs (num);
+    var digitCount = 1 + Math.floor (Math.log (an) / Math.LN10);
+    if (digitCount >= numZeros) {
+        return num;
+    }
+    var zeroString = Math.pow (10, numZeros - digitCount).toString ().substr (1);
+    return num < 0 ? '-' + zeroString + an : zeroString + an;
+}
