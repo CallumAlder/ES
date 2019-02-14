@@ -10,6 +10,10 @@ class MidiOUT:
         self.__name = name
         self.__mess_chan = mess_chan
 
+        sleep(0.001)
+
+        print(self.__ser.isOPEN())
+
     def get_name(self):
         return self.__name
 
@@ -92,3 +96,4 @@ class MidiOUT:
             return None
 
         self.__ser.write(bytearray([self.__mess_chan, control, value]))
+        sleep(0.001)
