@@ -1,6 +1,7 @@
 import serial
-import RPi.GPIO as GPIO
 from time import sleep
+
+import pigpio
 
 # Set MIDI port
 #ser = serial.Serial('/dev/ttyAMA0', 
@@ -20,19 +21,31 @@ from time import sleep
 #msg = bytearray([27,63])
 #ser.write(msg)
 
-GPIO.setmode(GPIO.BCM)     # set up BCM GPIO numbering  
-GPIO.setup(4, GPIO.IN)    # set GPIO25 as input (button)  
-  
-# Define a threaded callback function to run in another thread when events are detected  
-def my_callback(channel):  
-    if GPIO.input(4):     # if port 25 == 1  
-        print ("Rising edge detected on 4") 
-    else:                  # if port 25 != 1  
-        print ("Falling edge detected on 4")  
-  
-# when a changing edge is detected on port 25, regardless of whatever   
-# else is happening in the program, the function my_callback will be run  
-GPIO.add_event_detect(4, GPIO.BOTH, callback=my_callback) 
+
+
+
+pi1 = pigpio.pi()
+buttPin = 4
+pi1.set_mode(buttPin, pigpio.INPUT)
+
+
+def buttonDown(gpio, level, tick):
+    print("DOWN")
+    #outport.send(onmess)
+
+
+def buttonUp(gpio, level, tick):
+    print("UP")
+    #outport.send(offmess)
+
+
+cb = pi1.callback(buttPin, pigpio.RISING_EDGE, buttonDown)
+cb2 = pi1.callback(buttPin, pigpio.FALLING_EDGE, buttonUp)
+# Just loop and do nothing
+while True:
+    pass
+
+
 
 while 1:
 
