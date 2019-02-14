@@ -213,8 +213,8 @@ function getKnobValues() {
   // Convert the array to comma separated string
   var newMessage =knobValuesScaled.toString();
   var jsonObj = new Object();
-  jsonObj.pitch = knobValuesScaled[0];
-  jsonObj.portamento = knobValuesScaled[1];
+  jsonObj.PITCH = knobValuesScaled[0];
+  jsonObj.PORTAMENTO = knobValuesScaled[1];
 //   jsonObj.married = false;
   var jsonString = JSON.stringify(jsonObj);
   return jsonString; // or newMessage (for just plain array)
