@@ -2,17 +2,24 @@ import paho.mqtt.client as mqtt
 import json
 import time
 
+from midi_class import MidiOUT
+
 def on_publish(client, userdata, mid):
    print("mid: " + str(mid))
 
 def on_message(client, userdata, msg):
+    global Enzo
     msg_dict = msg.payload.decode()
     json_msg = json.loads(msg_dict)
     print("msg: " + str(msg_dict))
     print("json: ", json_msg)
     for key, value in json_msg.items():
         # Do enzo stuff for each element of json dict.
+        enzo_comms(Enzo, key, value)
         print("Key: {0}, Value: {1}".format(key, value))
+
+def enzo_comms(enzo, control, value):
+    enzo.send_data(control, value)
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code: " + str(rc))
@@ -21,8 +28,8 @@ def on_connect(client, userdata, flags, rc):
     listen_topic1 = "IC.embedded/skadoosh/midi"
     client.subscribe(listen_topic1)
     print("Subscribing to: " + listen_topic1 + "...")
-    # Publish topic - it is not publishing anything?
-    # client.subscribe("")
+
+Enzo = MidiOUT('enzo', 176, '/dev/ttyAMA0', baud=38400)
 
 broker = "iot.eclipse.org"
 port = 1883
@@ -40,16 +47,7 @@ if X == 0:
     print("Waiting for data...")
     client.loop_start()
     while 1:
-        # time.sleep(0.1)
-
-        # print("Publishing...")
-        # client.publish(topic="world", payload="msgMsg4GdLuck", qos=1)
-        # client.publish(topic="IC.embedded/skadoosh/midi", payload="msgMsg4GdLuck", qos=1)
         time.sleep(0.1)
-
-        # print(mqtt.error_string(client.publish(topic="world", payload=b'msg', qos=1).rc))
-        # client.loop_stop()
-        # client.disconnect()
 else:
     client.loop_stop()
     client.disconnect()
