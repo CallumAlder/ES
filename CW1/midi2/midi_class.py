@@ -12,7 +12,10 @@ class MidiOUT:
 
         sleep(0.001)
 
-        print(self.__ser.isOPEN())
+        print(self.get_ser().isOPEN())
+
+    def get_ser(self):
+        return self.__ser
 
     def get_name(self):
         return self.__name
