@@ -251,6 +251,7 @@ function knobUpdater(sensorDataMsg){
   if (didUpdate == true) {
       var newMessage=getKnobValues();
       publishMIDIsettings(newMessage); // function defined in mqtt-skadoosh.js
+
   }
   
 }
@@ -284,6 +285,8 @@ $('.dropdown-menu a').click(function(event){
   else {
       logMessage("I see that: " + dd_knobNum  + " & " + dd_knobType);
   }
+  
+  publish(undefined,"map@chg",2);
   
 //  console.log(document.getElementById("knob"+(dd_knobNum)+"_setting").innerHTML)
 //  console.log(("knob"+(dd_knobNum)+"_"+dd_knobType))
