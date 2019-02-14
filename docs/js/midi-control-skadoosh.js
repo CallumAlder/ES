@@ -32,6 +32,17 @@ var knobHandler = function (knobID,containerID) {
 //                          \/                                              \/       \/
 document.getElementById('knob1').addEventListener("click", knobHandler('#knob1','#knob1_container'));
 document.getElementById('knob2').addEventListener("click", knobHandler('#knob2','#knob2_container'));
+document.getElementById('knob3').addEventListener("click", knobHandler('#knob3','#knob3_container'));
+document.getElementById('knob4').addEventListener("click", knobHandler('#knob4','#knob4_container'));
+document.getElementById('knob5').addEventListener("click", knobHandler('#knob5','#knob5_container'));
+document.getElementById('knob6').addEventListener("click", knobHandler('#knob6','#knob6_container'));
+document.getElementById('knob7').addEventListener("click", knobHandler('#knob7','#knob7_container'));
+document.getElementById('knob8').addEventListener("click", knobHandler('#knob8','#knob8_container'));
+document.getElementById('knob9').addEventListener("click", knobHandler('#knob9','#knob9_container'));
+document.getElementById('knob10').addEventListener("click", knobHandler('#knob10','#knob10_container'));
+document.getElementById('knob11').addEventListener("click", knobHandler('#knob11','#knob11_container'));
+document.getElementById('knob12').addEventListener("click", knobHandler('#knob12','#knob12_container'));
+
 
 function getAngle(cx, cy, ex, ey, offset) {
   var dy = ey - cy;
@@ -195,7 +206,7 @@ function getPosition(el) {
 }
 
 // Helper function that gets the values for all knob values and returns a comma separated string
-var NUM_KNOBS = 2;
+var NUM_KNOBS = 12;
 function getKnobValues() {
 
   var knobValues = new Array(NUM_KNOBS);
@@ -215,6 +226,17 @@ function getKnobValues() {
   var jsonObj = new Object();
   jsonObj.PITCH = knobValuesScaled[0];
   jsonObj.PORTAMENTO = knobValuesScaled[1];
+  jsonObj.FEEDBACK = knobValuesScaled[2];
+  jsonObj.FILTERTYPE = knobValuesScaled[3];
+  jsonObj.MIX = knobValuesScaled[4];
+  jsonObj.DELAYLEVEL = knobValuesScaled[5];
+  jsonObj.SUSTAIN = knobValuesScaled[6];
+  jsonObj.RINGMODULATION = knobValuesScaled[7];
+  jsonObj.FILTERENVELOPE = knobValuesScaled[8];
+  jsonObj.FILTERBANDWIDTH = knobValuesScaled[9];
+  jsonObj.MODULATION = knobValuesScaled[10];
+  jsonObj.DELAYFEEDBACK = knobValuesScaled[11];
+
 //   jsonObj.married = false;
   var jsonString = JSON.stringify(jsonObj);
   return jsonString; // or newMessage (for just plain array)
