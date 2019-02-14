@@ -55,19 +55,19 @@ class MidiOUT:
         elif control == "PORTAMENTO":
             control = 22
 
-        elif control == "FILTER TYPE":
+        elif control == "FILTERTYPE":
             control = 23
 
-        elif control == "DELAY LEVEL":
+        elif control == "DELAYLEVEL":
             control = 24
 
-        elif control == "RING MODULATION":
+        elif control == "RINGMODULATION":
             control = 25
 
-        elif control == "FILTER BANDWIDTH":
+        elif control == "FILTERBANDWIDTH":
             control = 26
 
-        elif control == "DELAY FEEDBACK":
+        elif control == "DELAYFEEDBACK":
             control = 27
 
         #  ---- SYTNH MODE 4 WAY BUTTON ----
