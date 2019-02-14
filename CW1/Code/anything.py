@@ -81,7 +81,6 @@ if X == 0:
 
         # client.subscribe("hworld")
         time.sleep(0.5)
-
         # print("Publishing...")
         # client.publish(topic="IC.embedded/skadoosh/midi", payload="Ife-12/2/2019", qos=1)
         # print(mqtt.error_string(client.publish(topic="IC.embedded/skadoosh/midi", payload=b'test-msg', qos=1).rc))
