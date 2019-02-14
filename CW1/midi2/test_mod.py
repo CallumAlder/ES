@@ -44,3 +44,7 @@ while True:
     sleep(2)
     ser.write(bytearray([176,29,31]))
     sleep(2)
+    ser.write(bytearray([176,29,95]))
+    sleep(2)
+    ser.write(bytearray([176,29,127]))
+    sleep(2)
