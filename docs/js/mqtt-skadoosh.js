@@ -239,8 +239,8 @@ function setFormEnabledState(enabled) {
 
 }
 
-function publish(topic="IC.embedded/skadoosh/midi",message="lol@callumisgay",qos = 0) {
-//  var message = "lol @callumisgay";
+function publish(topic="IC.embedded/skadoosh/midi",message="lol@cig",qos = 0) {
+//  var message = "lol@cig";
   var retain = false;
   logMessage("INFO", "Publishing Message: [Topic: ", topic, ", Payload: ", message, ", QoS: ", qos, ", Retain: ", retain, "]");
   message = new Paho.MQTT.Message(message);

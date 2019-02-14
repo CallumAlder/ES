@@ -211,7 +211,12 @@ function getKnobValues() {
   
   // Convert the array to comma separated string
   var newMessage =knobValuesScaled.toString();
-  return newMessage;
+  var jsonObj = new Object();
+  jsonObj.pitch = knobValuesScaled[0];
+  jsonObj.portamento = knobValuesScaled[1];
+//   jsonObj.married = false;
+  var jsonString = JSON.stringify(jsonObj);
+  return jsonString; // or newMessage (for just plain array)
 }
 
 var SENSOR_TO_KNOB = new Array(NUM_KNOBS); // SENSOR_TO_KNOB[0] = 3; Means Knob 1 (0+1) is assigned to the 3rd sensor data (0 indexed)
@@ -228,15 +233,23 @@ function knobUpdater(sensorDataMsg){
   sensorArray[1] = parseInt(jsonDATA.yGy);
   sensorArray[2] = parseInt(jsonDATA.zGy);
   sensorArray[3] = parseInt(jsonDATA.prx);
-  console.log(sensorArray);
+//  console.log(sensorArray); Debug - list sensor array data in console
+  
+  var didUpdate = false;
   // Get values from all the knobs
-  for(var i=0; i<NUM_KNOBS; i++) { 
+  for(var i=0; i<NUM_KNOBS; i++) {
     if (SENSOR_TO_KNOB[i] >= 0) {
       logMessage( "Updating Knob: " + (i+1) + "with: " + parseInt(sensorArray[SENSOR_TO_KNOB[i]]) );
       if (sensorArray[SENSOR_TO_KNOB[i]]>=0){
-        progressBarUpdate(parseInt(360*sensorArray[SENSOR_TO_KNOB[i]]/127),360,('#knob'+String(i+1))); 
+        progressBarUpdate(parseInt(360*sensorArray[SENSOR_TO_KNOB[i]]/127),360,('#knob'+String(i+1)));
+        didUpdate=true;
       }
     }
+  }
+  
+  if (didUpdate == true) {
+      var newMessage=getKnobValues();
+      publishMIDIsettings(newMessage); // function defined in mqtt-skadoosh.js
   }
   
 }
@@ -250,7 +263,6 @@ $('.dropdown-menu a').click(function(event){
   if  ( dd_knobType == "man" ) {
         logMessage("You what " + dd_knobNum + "= " + dd_knobType );
         SENSOR_TO_KNOB[Number(dd_knobNum-1)] = -1;
-        knobUpdater("50,11,12,13");
        } 
   else if  ( dd_knobType == "xGy" ) {
         logMessage("You what " + dd_knobNum + "= " + dd_knobType );
