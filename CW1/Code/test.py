@@ -1,5 +1,4 @@
-# import time
-from utime import sleep
+import time
 import si1145 as SI1145
 
 sensor = SI1145.SI1145()
