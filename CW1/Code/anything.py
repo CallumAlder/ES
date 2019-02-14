@@ -40,7 +40,7 @@ def on_connect(client, userdata, flags, rc):
     # reconnect then subscriptions will be renewed.
     # client.subscribe("$SYS/#")
     # client.subscribe("EdB/A")
-    client.subscribe("world")
+    client.subscribe("IC.embedded/skadoosh/midi")
 
 
 broker = "iot.eclipse.org"
@@ -75,7 +75,7 @@ if X == 0:
     # client.subscribe("EdB/A")
     # time.sleep(0.5)
 
-    client.subscribe("hworld")
+    # client.subscribe("hworld")
     time.sleep(0.5)
 
     print("Publishing...")
