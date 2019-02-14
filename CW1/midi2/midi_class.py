@@ -12,7 +12,8 @@ class MidiOUT:
 
         sleep(0.001)
 
-        print(self.get_ser().isOpen())
+        if not self.get_ser().isOpen():
+            raise IOError("Failed to open serial port")
 
     def get_ser(self):
         return self.__ser
