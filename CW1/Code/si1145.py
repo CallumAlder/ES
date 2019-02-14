@@ -200,6 +200,8 @@ class SI1145(object):
         # Load calibration values.
         self._load_calibration()
 
+        print("Initialising Light Sensor")
+
     # device reset
     def _reset(self):
         self._device.write8(SI1145_REG_MEASRATE0, 0)

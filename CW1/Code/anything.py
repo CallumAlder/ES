@@ -27,10 +27,12 @@ import paho.mqtt.client as mqtt
 import time
 
 def on_publish(client, userdata, mid):
-   print("mid: "+str(mid))
+   print("mid: "+ str(mid))
 
 def on_message(client, userdata, msg):
-   print("msg: " + str(msg.payload.decode()))
+   msg = str(msg.payload.decode())
+   print("msg: " + msg)
+   return msg
    # print(client.__dict__)
 
 def on_connect(client, userdata, flags, rc):
@@ -62,27 +64,29 @@ client.on_connect = on_connect
 
 X = client.connect(broker, port=port)
 print(X)
-time.sleep(0.25)
 if X == 0:
-    # client.on_publish = on_publish
-    # client.on_message = on_message
-    # client.on_connect = on_connect
+
     client.loop_start()
-    print("Subscribing...")
+    while 1:
+        # client.on_publish = on_publish
+        # client.on_message = on_message
+        # client.on_connect = on_connect
 
-    # client.subscribe("BRX/EdB/")
-    # client.subscribe("hworld")
-    # client.subscribe("EdB/A")
-    # time.sleep(0.5)
+        # print("Subscribing...")
 
-    # client.subscribe("hworld")
-    time.sleep(0.5)
+        # client.subscribe("BRX/EdB/")
+        # client.subscribe("hworld")
+        # client.subscribe("EdB/A")
+        # time.sleep(0.5)
 
-    print("Publishing...")
-    client.publish(topic="world", payload="msgMsg4GdLuck", qos=1)
-    print(mqtt.error_string(client.publish(topic="world", payload=b'msg', qos=1).rc))
+        # client.subscribe("hworld")
+        time.sleep(0.5)
+        # print("Publishing...")
+        # client.publish(topic="IC.embedded/skadoosh/midi", payload="Ife-12/2/2019", qos=1)
+        # print(mqtt.error_string(client.publish(topic="IC.embedded/skadoosh/midi", payload=b'test-msg', qos=1).rc))
 
-    time.sleep(2)
+        time.sleep(2)
+
     client.loop_stop()
     client.disconnect()
 else:
