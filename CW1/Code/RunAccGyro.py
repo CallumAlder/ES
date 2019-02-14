@@ -40,3 +40,4 @@ if __name__ == '__main__':
     #            print "Click detected (0x%2X)" % (click)
     #            if (click & 0x10): print " single click"
 #            if (click & 0x20): print " double click"
+

@@ -3,9 +3,10 @@ import bluetooth
 import time
 import datetime
 import json
+# import RPi.GPIO as GPIO
+import paho.mqtt.client as mqtt
 
 import numpy as np
-
 
 from lis3dh import AccGyro
 from time import sleep
@@ -26,9 +27,66 @@ GYRO_DATA = 3
 # Bluetooth setup
 bd_addr = "B8:27:EB:BF:51:05"
 
-port = 1
-client_socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-client_socket.connect((bd_addr, port))
+# BT setup
+# bt_port = 1
+# client_socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+# client_socket.connect((bd_addr, 1))
+
+# Specify topic to subscribe and publish to
+publish_topic1 = "IC.embedded/skadoosh/sensor"
+listen_topic1 = "IC.embedded/skadoosh/midi"
+
+def on_publish(client, userdata, mid):
+   print("published:" + str(mid))
+
+def on_message(client, userdata, msg):
+    get_mqtt_msg(msg)
+
+def get_mqtt_msg(msg):
+    msg = str(msg.payload.decode())
+    print("msg: " + msg)
+    # return
+
+def on_connect(client, userdata, flags, rc, topic):
+    print("Connected with result code:" + str(rc))
+
+    # Subscribing in on_connect() means that if we lose the connection and
+    # reconnect then subscriptions will be renewed.
+    client.subscribe("IC.embedded/skadoosh/midi")
+    # client.subscribe(publish_topic1)
+
+def extract_data(s_data):
+    s_data = s_data.replace("b", "")
+    s_data = s_data.replace("'", "")
+    s_data = s_data.split(",")
+
+    json_data = {"prx": s_data[0], "xGy": s_data[1], "yGy": s_data[2], "zGy": s_data[3]}
+
+    # print("JSON Data:", json_data)
+    return json_data
+
+# TODO - MQTT
+# Can MQTT protocol and BT setup be done in parallel with threading?
+    # Wait for both processes to be complete before proceeding?
+    # Need to generate a certificate
+# MQTT protocol setup
+broker = "iot.eclipse.org"
+mqtt_port = 1883
+
+client = mqtt.Client()
+# client.on_publish = on_publish
+client.on_message = on_message
+client.on_connect = on_connect
+
+X = client.connect(broker, port=mqtt_port)
+print("Client Connection Result:")
+print(X)
+time.sleep(0.001)
+
+if X == 0:
+    client.loop_start()
+else:
+    print("Pas de connexion")
 
 # test_array = np.empty((0, 5), float)
 # test_array = np.append(test_array, [[1.0, 2.0, 5, 71.2, 4.0]], axis=0)
@@ -285,7 +343,7 @@ while True:
     scaled_ir = (1-ir_weight)*current_ir + ir_weight*128*scaled_ir
     if abs(current_ir - scaled_ir) >= 8:
         current_ir = scaled_ir
-        print_ir = current_ir
+        print_ir = int(current_ir)
     else:
         # Only prints non-zero value when there has been a large change in the value of ir
         print_ir = 0
@@ -300,7 +358,7 @@ while True:
     scaled_x = (1 - x_weight)*current_x + x_weight*128*scaled_x
     if abs(current_x - scaled_x) >= 17:
         current_x = scaled_x
-        print_x = current_x
+        print_x = int(current_x)
     else:
         print_x = 0
 
@@ -312,9 +370,9 @@ while True:
         med_array[2] = (max_array[2] + min_array[2])/2
     scaled_y = ((y - med_array[2]) / (max_array[2] - min_array[2])) + 0.5
     scaled_y = (1 - y_weight) * current_y + y_weight * 128 * scaled_y
-    if abs(current_y - scaled_y) >= 22:
+    if abs(current_y - scaled_y) >= 15:
         current_y = scaled_y
-        print_y = current_y
+        print_y = int(current_y)
     else:
         print_y = 0
 
@@ -326,29 +384,45 @@ while True:
         med_array[3] = (max_array[3] + min_array[3])/2
     scaled_z = ((z - med_array[3]) / (max_array[3] - min_array[3])) + 0.5
     scaled_z = (1 - z_weight) * current_z + z_weight * 128 * scaled_z
-    if abs(current_z - scaled_z) >= 22:
+    if abs(current_z - scaled_z) >= 15:
         current_z = scaled_z
-        print_z = current_z
+        print_z = int(current_z)
     else:
         print_z = 0
 
-    # data = str(int(print_ir)) + "," + \
-    #        str(int(print_x)) + "," + \
-    #        str(int(print_y)) + "," + \
-    #        str(int(print_z))
+    if print_ir != 0:
+        data = str(print_ir)
+    else:
+        data = str("-1")
 
-    if int(print_ir) != 0 or int(print_x) != 0 or int(print_y) != 0 or int(print_z) != 0:
-        data = str(int(print_ir)) + "," + \
-               str(int(print_x)) + "," + \
-               str(int(print_y)) + "," + \
-               str(int(print_z))
+    if print_x != 0:
+        data += "," + str(print_x)
+    else:
+        data += ",-1"
 
-    # if data:
-    #     client_socket.send(data)
-    #     currentTime = datetime.datetime.now()
-    #     print("Message sent at:", currentTime)
+    if print_y != 0:
+        data += "," + str(print_y)
+    else:
+        data += ",-1"
 
-    sleep(0.01)
+    if print_z != 0:
+        data += "," + str(print_z)
+    else:
+        data += ",-1"
+
+    if data != "-1,-1,-1,-1":
+        # client_socket.send(data)
+        currentTime = datetime.datetime.now()
+        print("Message sent at:", currentTime)
+
+        j_data = extract_data(data)
+        # print("Publishing to " + topic + "...")
+        # print(mqtt.error_string(client.publish(topic=topic, payload=json.dumps(j_data), qos=1).rc))
+
+        client.publish(topic=publish_topic1, payload=json.dumps(j_data), qos=1)
+
+    sleep(0.03)
+    # client.loop_stop()
 
 
 
