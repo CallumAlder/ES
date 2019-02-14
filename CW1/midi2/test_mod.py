@@ -1,12 +1,9 @@
 import serial
-import RPi.GPIO as GPIO
 from time import sleep
+import pigpio
 
 # Set MIDI port
-#ser = serial.Serial('/dev/ttyAMA0', 
-#baudrate=38400, 
-#parity='N',
-#stopbits=0)  # Open serial at 38400bps
+ser = serial.Serial('/dev/ttyAMA0', baudrate=38400)  # Open serial at 38400bps
 
 #msg = str.encode('B11D3F)'
 #for ii in msg:
@@ -17,22 +14,37 @@ from time import sleep
 
 #ser.write(outmidi)
 
-#msg = bytearray([27,63])
+#msg = bytearray([176,29,63])
 #ser.write(msg)
 
-GPIO.setmode(GPIO.BCM)     # set up BCM GPIO numbering  
-GPIO.setup(4, GPIO.IN)    # set GPIO25 as input (button)  
-  
-# Define a threaded callback function to run in another thread when events are detected  
-def my_callback(channel):  
-    if GPIO.input(4):     # if port 25 == 1  
-        print ("Rising edge detected on 4") 
-    else:                  # if port 25 != 1  
-        print ("Falling edge detected on 4")  
-  
-# when a changing edge is detected on port 25, regardless of whatever   
-# else is happening in the program, the function my_callback will be run  
-GPIO.add_event_detect(4, GPIO.BOTH, callback=my_callback) 
 
-while 1:
 
+
+#pi1 = pigpio.pi()
+#buttPin = 4
+#pi1.set_mode(buttPin, pigpio.INPUT)
+
+
+#def buttonDown(gpio, level, tick):
+#    print("DOWN")
+#    ser.write(msg)
+    #outport.send(onmess)
+
+
+#def buttonUp(gpio, level, tick):
+#    print("UP")
+    #outport.send(offmess)
+
+
+#cb = pi1.callback(buttPin, pigpio.RISING_EDGE, buttonDown)
+#cb2 = pi1.callback(buttPin, pigpio.FALLING_EDGE, buttonUp)
+# Just loop and do nothing
+while True:
+    ser.write(bytearray([176,29,63]))
+    sleep(2)
+    ser.write(bytearray([176,29,31]))
+    sleep(2)
+    ser.write(bytearray([176,29,95]))
+    sleep(2)
+    ser.write(bytearray([176,29,127]))
+    sleep(2)
