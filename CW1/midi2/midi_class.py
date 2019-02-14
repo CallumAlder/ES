@@ -1,50 +1,94 @@
 import serial
 from time import sleep
-import pigpio
-
-# Set MIDI port
-ser = serial.Serial('/dev/ttyAMA0', baudrate=38400)  # Open serial at 38400bps
-
-#msg = str.encode('B11D3F)'
-#for ii in msg:
-#    print(ii,":",chr(ii))
-
-#outmidi = [i for i in msg]
-#print("outmidi: ", outmidi)
-
-#ser.write(outmidi)
-
-#msg = bytearray([176,29,63])
-#ser.write(msg)
 
 
+class MidiOUT:
 
+    #  mess_chan=176, port='/dev/ttyAMA0', baud=38400
+    def __init__(self, name, mess_chan, port, baud):
+        self.__ser = serial.Serial(port, baudrate=baud)
+        self.__name = name
+        self.__mess_chan = mess_chan
 
-#pi1 = pigpio.pi()
-#buttPin = 4
-#pi1.set_mode(buttPin, pigpio.INPUT)
+    def get_name(self):
+        return self.__name
 
+    def get_mess_chan(self):
+        return self.__mess_chan
 
-#def buttonDown(gpio, level, tick):
-#    print("DOWN")
-#    ser.write(msg)
-    #outport.send(onmess)
+    def set_name(self, new_name):
+        self.__name = new_name
 
+    def set_mess_chan(self, new_mess_chan):
+        self.__mess_chan = new_mess_chan
 
-#def buttonUp(gpio, level, tick):
-#    print("UP")
-    #outport.send(offmess)
+    def send_data(self, control, value):
 
+        #  ---- STANDARD POTS ----
+        if control == "PITCH":
+            control = 16
 
-#cb = pi1.callback(buttPin, pigpio.RISING_EDGE, buttonDown)
-#cb2 = pi1.callback(buttPin, pigpio.FALLING_EDGE, buttonUp)
-# Just loop and do nothing
-while True:
-    ser.write(bytearray([176,29,63]))
-    sleep(2)
-    ser.write(bytearray([176,29,31]))
-    sleep(2)
-    ser.write(bytearray([176,29,95]))
-    sleep(2)
-    ser.write(bytearray([176,29,127]))
-    sleep(2)
+        elif control == "FILTER":
+            control = 17
+
+        elif control == "MIX":
+            control = 18
+
+        elif control == "SUSTAIN":
+            control = 19
+
+        elif control == "ENVELOPE":
+            control = 20
+
+        elif control == "MODULATION":
+            control = 21
+
+        #  ---- ALTERNATE POTS ----
+        elif control == "PORTAMENTO":
+            control = 22
+
+        elif control == "FILTER TYPE":
+            control = 23
+
+        elif control == "DELAY LEVEL":
+            control = 24
+
+        elif control == "RING MODULATION":
+            control = 25
+
+        elif control == "FILTER BANDWIDTH":
+            control = 26
+
+        elif control == "DELAY FEEDBACK":
+            control = 27
+
+        #  ---- SYTNH MODE 4 WAY BUTTON ----
+        elif control == "DRY":
+            control = 29
+            value = 31
+
+        elif control == "MONO":
+            control = 29
+            value = 63
+
+        elif control == "ARP":
+            control = 29
+            value = 95
+
+        elif control == "POLY":
+            control = 29
+            value = 127
+
+        #  ---- WAVESHAPE ----
+        elif control == "SAWTOOTH":
+            control = 30
+            value = 63
+
+        elif control == "MONO":
+            control = 30
+            value = 127
+
+        else:
+            return None
+
+        self.__ser.write(bytearray([self.__mess_chan, control, value]))
