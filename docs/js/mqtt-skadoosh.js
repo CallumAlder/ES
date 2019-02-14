@@ -83,8 +83,7 @@ function onMessageArrived(message) {
   row.insertCell(1).innerHTML = safeTagsRegex(message.payloadString);
   row.insertCell(2).innerHTML = messageTime;
   row.insertCell(3).innerHTML = message.qos;
-
-
+  
   if (!document.getElementById(message.destinationName)) {
     var lastMessageTable = document.getElementById("lastMessageTable").getElementsByTagName("tbody")[0];
     var newlastMessageRow = lastMessageTable.insertRow(0);
@@ -103,6 +102,11 @@ function onMessageArrived(message) {
     lastMessageRow.cells[2].innerHTML = messageTime;
     lastMessageRow.cells[3].innerHTML = message.qos;
   }
+  
+    // Call KnobUpdater function in midi-control.js
+  if ( (message.destinationName) == "IC.embedded/skadoosh/sensor") {
+    knobUpdater(message.payloadString);
+  }  
 
 }
 
@@ -235,8 +239,8 @@ function setFormEnabledState(enabled) {
 
 }
 
-function publish(topic="IC.embedded/skadoosh/midi",message="lol@callumisgay",qos = 0) {
-//  var message = "lol @callumisgay";
+function publish(topic="IC.embedded/skadoosh/midi",message="lol@cig",qos = 0) {
+//  var message = "lol@cig";
   var retain = false;
   logMessage("INFO", "Publishing Message: [Topic: ", topic, ", Payload: ", message, ", QoS: ", qos, ", Retain: ", retain, "]");
   message = new Paho.MQTT.Message(message);
