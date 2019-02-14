@@ -4,12 +4,28 @@ import time
 import datetime
 import json
 import paho.mqtt.client as mqtt
+import pigpio
 
 import numpy as np
 
 from lis3dh import AccGyro
 from time import sleep
 from math import log
+
+GPIO = pigpio.pi()
+
+SUCCESS_LED = 20    # Success LED
+GPIO.set_mode(SUCCESS_LED, pigpio.OUTPUT)
+
+FAIL_LED = 16
+GPIO.set_mode(FAIL_LED, pigpio.OUTPUT)
+
+print("Testing LEDS...")
+GPIO.write(SUCCESS_LED, 1)
+GPIO.write(FAIL_LED, 1)
+time.sleep(2)
+GPIO.write(SUCCESS_LED, 0)
+GPIO.write(FAIL_LED, 0)
 
 def on_publish(client, userdata, mid):
    print("mid: "+ str(mid))
@@ -19,10 +35,12 @@ def on_message(client, userdata, msg):
    print("msg: " + msg)
 
    if msg == "lol@cig":
-       print("Turn green LED on...")
-
+       print("Turn success LED on...")
+       GPIO.write(SUCCESS_LED, 1)
+       time.sleep(2)
+       GPIO.write(SUCCESS_LED, 0)
    return msg
-   # print(client.__dict__)
+
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code: " + str(rc))
@@ -145,8 +163,6 @@ if __name__ == '__main__':
     y_weight = 0.3
     z_weight = 0.26
 
-    X = -1
-
     # Specify topic to subscribe and publish to
     publish_topic1 = "IC.embedded/skadoosh/sensor"
     listen_topic1 = "IC.embedded/skadoosh/midi"
@@ -160,16 +176,19 @@ if __name__ == '__main__':
     client.on_connect = on_connect
 
     # X = client.connect(broker, port=port)
+    X = -1
 
     start = time.time()
     while X != 0:
         time.sleep(0.5)
-        X = client.connect(broker, port=1)
-        print(time.time() - start)
-        if time.time() - start >= 10:
-            # TODO: start again
-            print("Turn RED LED on ")
-        print(X)
+        try:
+            X = client.connect(broker, port=port)
+        except:
+            print("RED LED on")
+            GPIO.write(FAIL_LED, 1)
+            time.sleep(2)
+            GPIO.write(FAIL_LED, 0)
+            print(X)
 
     # Sensor initialisation
     lightSensor = si1145.SI1145()
