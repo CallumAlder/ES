@@ -11,6 +11,7 @@ from lis3dh import AccGyro
 from time import sleep
 from math import log
 
+# Test that the LEDs are working by having them all turn on very quickly
 def test_LEDs(success_led, fail_led, chg_led, gpio):
     print("Testing LEDS...")
     gpio.write(success_led, 1)
@@ -21,6 +22,11 @@ def test_LEDs(success_led, fail_led, chg_led, gpio):
     gpio.write(fail_led, 0)
     gpio.write(chg_led, 0)
 
+def flash_LED(LED, duration, gpio):
+    gpio.write(LED, 1)
+    time.sleep(duration)
+    gpio.write(LED, 0)
+
 GPIO = pigpio.pi()
 
 # LEDs are used as feedback for: system errors, state changes and successful connections
@@ -28,7 +34,7 @@ SUCCESS_LED = 20    # Success LED - Blinks when the guitar module connects to th
 GPIO.set_mode(SUCCESS_LED, pigpio.OUTPUT)
 
 FAIL_LED = 16       # Fail LED - Blinks once when a connection error occurs
-                    #          - Blinks twice when
+                    #          - Blinks twice when...
 GPIO.set_mode(FAIL_LED, pigpio.OUTPUT)
 
 CHANGE_LED = 26     # Change LED - Blinks when the mapping of sensor data to outputs has changed
@@ -43,7 +49,7 @@ def on_publish(client, userdata, mid):
 
 def on_message(client, userdata, msg):
    msg = str(msg.payload.decode())
-   print("msg: " + msg)
+   print("Received: " + msg)
 
    if msg == "map@chg":
        print("Turn change LED on...")
@@ -52,12 +58,14 @@ def on_message(client, userdata, msg):
        GPIO.write(CHANGE_LED, 0)
 
 def on_connect(client, userdata, flags, rc):
+    # The client has connected to the broker
     print("Connected with result code: " + str(rc))
+
+    # This Pi will be listening to messages on this topic
     client.subscribe("IC.embedded/skadoosh/midi")
 
-    GPIO.write(SUCCESS_LED, 1)
-    time.sleep(2)
-    GPIO.write(SUCCESS_LED, 0)
+    # Provides user feedback (green light)
+    flash_LED(SUCCESS_LED, 2)
 
 def extract_data(s_data):
     s_data = s_data.replace("b", "")
@@ -70,16 +78,16 @@ def extract_data(s_data):
 
 def min_max_test(raw, max, min):
     if raw >= max:
-        return raw, min, True
+        return raw, min
     elif raw < max:
         if min < 0 and abs(raw) > abs(min):
-            return max, raw, True
+            return max, raw
         elif min > 0 and raw < min:
-            return max, raw, True
+            return max, raw
         else:
-            return max, min, False
+            return max, min
     else:
-        return max, min, False
+        return max, min
 
 def get_min(min_value):
     if min_value == 0:
@@ -87,10 +95,10 @@ def get_min(min_value):
     else:
         return log(min_value)
 
-def lin_calibration():
+def sensor_calibration():
     print("Extracting calibration parameters")
+    # Number of calibration trials
     cal_trials = 100
-    n = 0
 
     max_ir = 0
     min_ir = 1000000
@@ -104,65 +112,34 @@ def lin_calibration():
     max_z = 0
     min_z = 1000000
 
-    med_array = np.zeros(4)
-
+    n = 0
     while n < cal_trials:
+        # IR sensor calibration (for proximity sensing) tuned on a log scale
         cal_ir = log(lightSensor.readIR())
-        max_ir, min_ir, update_med = min_max_test(cal_ir,
-                                                  max_ir,
-                                                  min_ir)
-        if update_med:
-            med_array[0] = (max_ir + min_ir)/2
+        max_ir, min_ir = min_max_test(cal_ir, max_ir, min_ir)
 
-        # Include gyro data so you can tell which direction is left and which is right
-        max_x, min_x, update_med = min_max_test(agSensor.getX(),
-                                                max_x,
-                                                min_x)
-        if update_med:
-            med_array[1] = (max_x + min_x)/2
+        # Gyroscope data calibration (to get a sense of left versus right)
+        max_x, min_x = min_max_test(agSensor.getX(), max_x, min_x)
+        max_y, min_y = min_max_test(agSensor.getY(), max_y, min_y)
+        max_z, min_z = min_max_test(agSensor.getZ(), max_z, min_z)
 
-        max_y, min_y, update_med = min_max_test(agSensor.getY(),
-                                                max_y,
-                                                min_y)
-        if update_med:
-            med_array[2] = (max_y + min_y)/2
-
-        max_z, min_z, update_med = min_max_test(agSensor.getZ(),
-                                                max_z,
-                                                min_z)
-        if update_med:
-            med_array[3] = (max_z + min_z)/2
-
-        # if (n % 25) == 0:
-        #     print("Trial count:", n)
         n += 1
         time.sleep(0.01)
 
-    max_array = np.array([max_ir,
-                          max_x,
-                          max_y,
-                          max_z])
+    cal_max_array = np.array([max_ir, max_x, max_y, max_z])
     print("Max array:", max_array)
 
-    min_array = np.array([min_ir,
-                          min_x,
-                          min_y,
-                          min_z])
+    cal_min_array = np.array([min_ir, min_x, min_y, min_z])
     print("Min array:", min_array)
 
-    med_array = np.add(max_array, min_array) / 2
+    cal_med_array = np.add(max_array, min_array) / 2
     print("Median array:", med_array)
 
-    return max_array, min_array, med_array
+    return cal_max_array, cal_min_array, cal_med_array
 
 if __name__ == '__main__':
 
-    ALL_DATA = 1
-    LIGHT_DATA = 2
-    GYRO_DATA = 3
-
     # Make a dynamic calibration method
-    # Make a thread for updating standard deviation and mean w/o significant overhead
     # Have separate threads for each sensor?
 
     current_ir = 0
@@ -187,13 +164,17 @@ if __name__ == '__main__':
     client.on_message = on_message
     client.on_connect = on_connect
 
-    # X = client.connect(broker, port=port)
-    X = -1
+    # Client certificate details
+    # client.tls_set(ca_certs="eclipse-cert.pem",
+    #                certfile="client.crt",
+    #                keyfile="client.key")
 
+    X = -1
     start = time.time()
     while X != 0:
         time.sleep(0.5)
         try:
+            # Attempt to connect to the MQTT Broker
             X = client.connect(broker, port=port)
         except:
             print("RED LED on")
@@ -208,11 +189,11 @@ if __name__ == '__main__':
     agSensor.setRange(AccGyro.RANGE_2G)
     time.sleep(1)
 
-    max_array, min_array, med_array = lin_calibration()
+    # Get range of data values for all sensors
+    max_array, min_array, med_array = sensor_calibration()
     print("Parameters for calibration extracted.")
 
     if X == 0:
-
         client.loop_start()
         while True:
             ir = ir_weight * 1.47 * log(lightSensor.readIR())
