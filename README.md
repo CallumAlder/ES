@@ -36,3 +36,8 @@
 Scripts can be made 'executable' with a shebang, e.g: #!/usr/bin/env python3.
 Then using the terminal command: chmod +x si1145.py running the script can
 then be done with: ./si1145.py.
+
+# Do that thing that fixed
+/home/pi/<user>/lib/python3.5/site-packages/paho/mqtt/client.py 
+Line 772
+context.load_verify_locations(capath=ca_certs)
