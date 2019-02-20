@@ -31,3 +31,8 @@
 3. Encryption - .js conversion
 4. Comment JS a bit
 5. Update website - make up some email and tings
+
+# Notes
+Scripts can be made 'executable' with a shebang, e.g: #!/usr/bin/env python3.
+Then using the terminal command: chmod +x si1145.py running the script can
+then be done with: ./si1145.py.
