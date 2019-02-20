@@ -70,11 +70,17 @@ client.tls_set(ca_certs="/home/pi/ES/CW1/Code/security_certs/")
 
 X = -1
 start = time.time()
+connectCounter = 0;
 while X != 0:
-    time.sleep(0.5)
+    connectCounter += 1;
     try:
         # Attempt to connect to the MQTT Broker
-        X = client.connect(broker, port=port)
+        X = client.connect_async(broker, port=port)
+        client.loop_start()
+        time.sleep(2)
+        client.loop_stop()
+        if connectCounter == 5:
+            raise(RuntimeError)
     except:     # Add an exception to catch
         # Flash the red (FAIL) LED
         print("Error - RED LED on. X: " + str(X))
@@ -84,7 +90,7 @@ while X != 0:
 max_array, min_array, med_array = spi.sensor_calibration()
 print("Parameters for calibration extracted.")
 
-client.loop_start()
+
 while True:
     if X == 0:
         # Handling IR sensor data for dynamic proximity approximation
