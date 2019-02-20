@@ -8,6 +8,8 @@ from time import sleep
 from math import log
 
 spi = sensorPiClass.SenPi()
+spi.init_light()
+spi.init_acc()
 
 
 # Callbacks for events occurring with the MQTT broker
@@ -35,6 +37,10 @@ def on_connect(client, userdata, flags, rc):
     spi.flash_led(spi.SUCCESS_LED, 2)
 
 
+def on_disconnect():
+    # Attempt to reconnect
+    return
+
 def extract_data(s_data):
     s_data = s_data.replace("b", "")
     s_data = s_data.replace("'", "")
@@ -50,18 +56,17 @@ current_x = 0
 current_y = 0
 current_z = 0
 
-broker = "iot.eclipse.org"
-port = 1883
+broker = "iot.eclipse.org1"
+port = 8883
 
 client = mqtt.Client()
 client.on_publish = on_publish
 client.on_message = on_message
 client.on_connect = on_connect
+client.on_disconnect = on_disconnect
 
 # Client certificate details
-# client.tls_set(ca_certs="eclipse-cert.pem",
-#                certfile="client.crt",
-#                keyfile="client.key")
+client.tls_set(ca_certs="/home/pi/ES/CW1/Code/security_certs/")
 
 X = -1
 start = time.time()

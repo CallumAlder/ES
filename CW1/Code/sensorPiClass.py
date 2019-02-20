@@ -7,6 +7,7 @@ import numpy as np
 from lis3dh import AccGyro
 from math import log
 
+from threading import Thread, Lock
 
 class SenPi(object):
     # Class object interfaces the sensors and the raspberry Pi
@@ -27,12 +28,8 @@ class SenPi(object):
 
         self.test_leds(self.SUCCESS_LED, self.CHANGE_LED, self.FAIL_LED)
 
-        time.sleep(0.1)
-        self.lightSensor = si1145.SI1145()
-        time.sleep(0.5)
-        self.agSensor = AccGyro(debug=True)
-        self.agSensor.setRange(AccGyro.RANGE_2G)
-        time.sleep(0.25)
+        self.lightSensor = None
+        self.agSensor = None
 
         # Weights used for exponential filtering in sensor acquisition
         self.ir_weight = 0.72
@@ -43,6 +40,27 @@ class SenPi(object):
         # Topics to listen or publish to
         self.publish_topic1 = "IC.embedded/skadoosh/sensor"
         self.listen_topic1 = "IC.embedded/skadoosh/midi"
+
+        self.gpio_mutex = Lock()
+
+    # Create accelerometer object
+    def init_acc(self):
+        self.gpio_mutex.acquire()
+        try:
+            self.agSensor = AccGyro(debug=True)
+            self.agSensor.setRange(AccGyro.RANGE_2G)
+            time.sleep(0.25)
+        finally:
+            self.gpio_mutex.release()
+
+    # Create light sensor object
+    def init_light(self):
+        self.gpio_mutex.acquire()
+        try:
+            self.lightSensor = si1145.SI1145()
+            time.sleep(0.25)
+        finally:
+            self.gpio_mutex.release()
 
     # Initialise GPIO mode of LED pins
     def init_gpio(self, pin, mode):
@@ -89,11 +107,17 @@ class SenPi(object):
         n = 0
         while n < cal_trials:
             # IR sensor calibration (for proximity sensing) tuned on a log scale
-            cal_ir = 0
+            val_ir = self.lightSensor.readIR()
             try:
-                cal_ir = log(self.lightSensor.readIR())
+                # cal_ir = log(self.lightSensor.readIR())
+                cal_ir = log(val_ir)
             except ValueError:
-                print("Error - IR value received =", str(cal_ir))
+                print("Error - IR value received =", str(val_ir))
+                self.lightSensor._reset()
+                time.sleep(0.01)
+                self.lightSensor._load_calibration()
+                time.sleep(0.01)
+                print("Light Sensor reset")
                 n -= 1
                 continue
 

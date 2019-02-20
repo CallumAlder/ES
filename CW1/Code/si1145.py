@@ -1,7 +1,3 @@
-# This script can be made 'executable' with a shebang, e.g: #!/usr/bin/env python3
-# Then using the terminal command: chmod +x si1145.py
-# running the script can then be done with: ./si1145.py
-
 """
 AUTHORS:    Ifeanyi Chinweze, Adel Haddad
 NOTES:      Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -45,8 +41,6 @@ Software and Dependencies
 import logging
 import time
 import Adafruit_GPIO.I2C as I2C
-
-# Try running the sensorPi script with the comments below
 
 # COMMANDS
     # NOTE: These wake the internal sequencer
