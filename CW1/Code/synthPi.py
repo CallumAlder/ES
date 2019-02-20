@@ -1,12 +1,11 @@
 import paho.mqtt.client as mqtt
 import json
 import time
+import midi_class
+import sensorPiClass
 
-from CW1.Code.midi_class import MidiOUT
-from CW1.Code.sensorPiClass import SenPi
-
-synPi = SenPi(debug=True)
-Enzo = MidiOUT('enzo', 176, '/dev/ttyAMA0', baud=38400)
+synPi = sensorPiClass.SenPi(debug=True)
+Enzo = midi_class.MidiOUT('enzo', 176, '/dev/ttyAMA0', baud=38400)
 
 
 def on_publish(client, userdata, mid):
@@ -16,6 +15,7 @@ def on_publish(client, userdata, mid):
 def on_message(client, userdata, msg):
     msg_dict = msg.payload.decode()
     json_msg = json.loads(msg_dict)
+
     print("msg: " + str(msg_dict))
     print("json: ", json_msg)
     for key, value in json_msg.items():
@@ -28,45 +28,84 @@ def enzo_comms(enzo, control, value):
     enzo.send_data(control, value)
 
 
+MQTT_CONNECTED = False
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code: " + str(rc))
+
+    global MQTT_CONNECTED
+    MQTT_CONNECTED = True
 
     # Listen topic
     client.subscribe(synPi.listen_topic1)
     print("Subscribing to: " + synPi.listen_topic1 + "...")
 
 
+def on_disconnect():
+    print("Disconnected from broker")
+    global MQTT_CONNECTED
+    MQTT_CONNECTED = False
+
+    # Attempt to reconnect
+    connect_count = 0
+    connect_broker = "iot.eclipse.org"
+    connect_port = 8883
+    while not MQTT_CONNECTED:
+        try:
+            # Attempt to connect to the MQTT Broker
+            if connect_count == 1:
+                client.connect_async(connect_broker, port=connect_port)
+                client.loop_start()
+                time.sleep(0.25)
+            if not MQTT_CONNECTED:
+                time.sleep(1)
+            if connect_count >= 5:
+                raise RuntimeError
+        except RuntimeError:
+            # Flash the red (FAIL) LED
+            print("Connection to broker unsuccessful")
+            spi.flash_led(spi.FAIL_LED, 2)
+            quit()
+
+
 broker = "iot.eclipse.org"
-port = 1883
+port = 8883
 
 client = mqtt.Client()
 client.on_publish = on_publish
 client.on_message = on_message
 client.on_connect = on_connect
+client.on_disconnect = on_disconnect
 
-client.tls_set(ca_certs="eclipse-cert.pem",
-               certfile="client.crt",
-               keyfile="client.key")
+# Client certificate details
+client.tls_set(ca_certs="/home/pi/ES/CW1/Code/security_certs/")
 
-X = -1
-start = time.time()
-while X != 0:
-    time.sleep(0.5)
+connectCounter = 0
+while not MQTT_CONNECTED:
+    connectCounter += 1
     try:
         # Attempt to connect to the MQTT Broker
-        X = client.connect(broker, port=port)
-    except:     # Add an exception type to catch
+        if connectCounter == 1:
+            client.connect_async(broker, port=port)
+            client.loop_start()
+            time.sleep(0.25)
+        if not MQTT_CONNECTED:
+            time.sleep(2)
+        # client.loop_stop()
+        if connectCounter >= 5:
+            raise RuntimeError
+    except RuntimeError:
         # Flash the red (FAIL) LED
-        print("Error - RED LED on. X: " + str(X))
-        synPi.flash_led(synPi.FAIL_LED, 2)
+        print("Connection to broker unsuccessful")
+        spi.flash_led(spi.FAIL_LED, 2)
+        quit()
 
-time.sleep(0.25)
-client.loop_start()
 while True:
-    if X != 0:
-        client.loop_stop()
+    if MQTT_CONNECTED:
+        # print("Waiting for data...")
+        time.sleep(0.25)
+    else:
         client.disconnect()
         print("Pas de connexion")
         break
-    else:
-        print("Waiting for data...")
+
+    # time.sleep(0.25)

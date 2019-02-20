@@ -18,9 +18,9 @@ class SenPi(object):
         self._GPIO = pigpio.pi()
 
         # LEDs are used as feedback for: system errors, state changes and successful connections
-        self.SUCCESS_LED = 20  # Success LED - Blinks when the guitar module connects to the web broker
-        self.FAIL_LED = 16  # Fail LED - Blinks once when a connection error occurs
-        self.CHANGE_LED = 26  # Change LED - Blinks when the mapping of sensor data to outputs has changed
+        self.SUCCESS_LED = 22   # Success LED - Blinks when the guitar module connects to the web broker
+        self.CHANGE_LED = 23  # Change LED - Blinks when the mapping of sensor data to outputs has changed
+        self.FAIL_LED = 24      # Fail LED - Blinks once when a connection error occurs
 
         self.init_gpio(self.SUCCESS_LED, 1)
         self.init_gpio(self.CHANGE_LED, 1)
