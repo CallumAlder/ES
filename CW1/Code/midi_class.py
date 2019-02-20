@@ -6,7 +6,11 @@ class MidiOUT:
 
     #  mess_chan=176, port='/dev/ttyAMA0', baud=38400
     def __init__(self, name, mess_chan, port, baud):
-        self.__ser = serial.Serial(port, baudrate=baud)
+        try:
+            self.__ser = serial.Serial(port, baudrate=baud, write_timeout=0)
+        except:
+            print("Failed to open serial port!!")
+
         self.__name = name
         self.__mess_chan = mess_chan
 
@@ -99,5 +103,11 @@ class MidiOUT:
         else:
             return None
 
-        self.__ser.write(bytearray([self.__mess_chan, control, value]))
+        try:
+            enzo_write = self.__ser.write(bytearray([self.__mess_chan, control, value]))
+            if enzo_write == 0:
+                print("MIDI Class:", enzo_write)
+                raise IOError ("MIDI cannot be reached")
+        except IOError:
+            print("ENZO cannot be reached")
         sleep(0.001)
