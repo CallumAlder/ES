@@ -1,10 +1,10 @@
-from CW1.Code.si1145 import SI1145
+import si1145
 import time
 import pigpio
 
 import numpy as np
 
-from CW1.Code.lis3dh import AccGyro
+from lis3dh import AccGyro
 from math import log
 
 
@@ -27,11 +27,12 @@ class SenPi(object):
 
         self.test_leds(self.SUCCESS_LED, self.CHANGE_LED, self.FAIL_LED)
 
+        time.sleep(0.1)
+        self.lightSensor = si1145.SI1145()
         time.sleep(0.5)
-        self.lightSensor = SI1145()
         self.agSensor = AccGyro(debug=True)
         self.agSensor.setRange(AccGyro.RANGE_2G)
-        time.sleep(0.5)
+        time.sleep(0.25)
 
         # Weights used for exponential filtering in sensor acquisition
         self.ir_weight = 0.72
@@ -46,7 +47,7 @@ class SenPi(object):
     # Initialise GPIO mode of LED pins
     def init_gpio(self, pin, mode):
         if mode == 1:
-            self._GPIO.setmode(pin, pigpio.OUTPUT)
+            self._GPIO.set_mode(pin, pigpio.OUTPUT)
             # TODO: Add an INPUT mode?
 
     # Test that the LEDs are working by having them all turn on very quickly
@@ -65,7 +66,7 @@ class SenPi(object):
     # Make the LEDs flash for some duration of time
     def flash_led(self, led, duration):
         self._GPIO.write(led, 1)
-        self._GPIO.sleep(duration)
+        time.sleep(duration)
         self._GPIO.write(led, 0)
 
     def sensor_calibration(self):
@@ -88,7 +89,14 @@ class SenPi(object):
         n = 0
         while n < cal_trials:
             # IR sensor calibration (for proximity sensing) tuned on a log scale
-            cal_ir = log(self.lightSensor.readIR())
+            cal_ir = 0
+            try:
+                cal_ir = log(self.lightSensor.readIR())
+            except ValueError:
+                print("Error - IR value received =", str(cal_ir))
+                n -= 1
+                continue
+
             max_ir, min_ir = self.min_max_test(raw=cal_ir, max=max_ir, min=min_ir, med_bool=None)
 
             # Gyroscope data calibration (to get a sense of left versus right)

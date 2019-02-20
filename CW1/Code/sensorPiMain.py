@@ -2,12 +2,12 @@ import time
 import datetime
 import json
 import paho.mqtt.client as mqtt
-from CW1.Code.sensorPiClass import SenPi
+import sensorPiClass
 
 from time import sleep
 from math import log
 
-spi = SenPi()
+spi = sensorPiClass.SenPi()
 
 
 # Callbacks for events occurring with the MQTT broker
@@ -41,7 +41,7 @@ def extract_data(s_data):
     s_data = s_data.split(",")
 
     json_data = {"prx": s_data[0], "xGy": s_data[1], "yGy": s_data[2], "zGy": s_data[3]}
-    # print("JSON Data:", json_data)
+    print("JSON Data:", json_data)
     return json_data
 
 
@@ -130,7 +130,7 @@ while True:
             j_data = extract_data(data)
             print("Publishing to " + spi.publish_topic1 + "...")
             print(mqtt.error_string(client.publish(topic=spi.publish_topic1, payload=json.dumps(j_data), qos=1).rc))
-        sleep(0.06)
+        sleep(0.1)
     else:
         print("Pas de connexion")
         spi.flash_led(spi.FAIL_LED, 2)

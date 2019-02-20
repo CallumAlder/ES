@@ -127,13 +127,13 @@ def sensor_calibration():
         time.sleep(0.01)
 
     cal_max_array = np.array([max_ir, max_x, max_y, max_z])
-    print("Max array:", max_array)
+    print("Max array:", cal_max_array)
 
     cal_min_array = np.array([min_ir, min_x, min_y, min_z])
-    print("Min array:", min_array)
+    print("Min array:", cal_min_array)
 
     cal_med_array = np.add(max_array, min_array) / 2
-    print("Median array:", med_array)
+    print("Median array:", cal_med_array)
 
     return cal_max_array, cal_min_array, cal_med_array
 
