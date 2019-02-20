@@ -16,6 +16,7 @@ def on_publish(client, userdata, mid):
 def on_message(client, userdata, msg):
     msg_dict = msg.payload.decode()
     json_msg = json.loads(msg_dict)
+
     print("msg: " + str(msg_dict))
     print("json: ", json_msg)
     for key, value in json_msg.items():

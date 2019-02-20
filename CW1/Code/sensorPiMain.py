@@ -56,7 +56,7 @@ current_x = 0
 current_y = 0
 current_z = 0
 
-broker = "iot.eclipse.org1"
+broker = "iot.eclipse.org"
 port = 8883
 
 client = mqtt.Client()
@@ -69,16 +69,15 @@ client.on_disconnect = on_disconnect
 client.tls_set(ca_certs="/home/pi/ES/CW1/Code/security_certs/")
 
 X = -1
-start = time.time()
+start = time.time()     # Used for the timeout but should be migrated to thread
 while X != 0:
-    time.sleep(0.5)
-    try:
-        # Attempt to connect to the MQTT Broker
-        X = client.connect(broker, port=port)
-    except:     # Add an exception to catch
-        # Flash the red (FAIL) LED
-        print("Error - RED LED on. X: " + str(X))
-        spi.flash_led(spi.FAIL_LED, 2)
+    X = client.connect(broker, port=port)
+    time.sleep(0.1)
+
+    # except:     # Add an exception to catch
+    #     # Flash the red (FAIL) LED
+    #     print("Error - RED LED on. X: " + str(X))
+    #     spi.flash_led(spi.FAIL_LED, 2)
 
 # Get range of data values for all sensors
 max_array, min_array, med_array = spi.sensor_calibration()
