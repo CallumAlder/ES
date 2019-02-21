@@ -3,6 +3,7 @@ import datetime
 import json
 import paho.mqtt.client as mqtt
 import sensorPiClass
+import ErrorHandling
 
 from time import sleep
 from math import log
@@ -46,7 +47,9 @@ def on_disconnect():
     connect_count = 0
     connect_broker = "iot.eclipse.org"
     connect_port = 8883
+
     while not MQTT_CONNECTED:
+        connect_count += 1
         try:
             # Attempt to connect to the MQTT Broker
             if connect_count == 1:
@@ -54,16 +57,14 @@ def on_disconnect():
                 client.loop_start()
                 time.sleep(0.25)
             if not MQTT_CONNECTED:
-                time.sleep(1)
-            if connect_count >= 5:
-                raise RuntimeError
-        except RuntimeError:
-            # Flash the red (FAIL) LED
-            print("Connection to broker unsuccessful")
-            spi.flash_led(spi.FAIL_LED, 2)
+                time.sleep(2)
+            if connectCounter >= 5:
+                raise ErrorHandling.BrokerConnectionError
+        except ErrorHandling.BrokerConnectionError:
             quit()
 
 
+# Get data into a JSON format
 def extract_data(s_data):
     s_data = s_data.replace("b", "")
     s_data = s_data.replace("'", "")
@@ -101,14 +102,10 @@ while not MQTT_CONNECTED:
             client.loop_start()
             time.sleep(0.25)
         if not MQTT_CONNECTED:
-            time.sleep(2)
-        # client.loop_stop()
+            time.sleep(1)
         if connectCounter >= 5:
-            raise RuntimeError
-    except RuntimeError:
-        # Flash the red (FAIL) LED
-        print("Connection to broker unsuccessful")
-        spi.flash_led(spi.FAIL_LED, 2)
+            raise ErrorHandling.BrokerConnectionError
+    except ErrorHandling.BrokerConnectionError:
         quit()
 
 spi.flash_led(spi.SUCCESS_LED, 2)
@@ -121,7 +118,6 @@ print("Parameters for calibration extracted.")
 while True:
     if MQTT_CONNECTED:
         # Handling IR sensor data for dynamic proximity approximation
-        # TODO: Try taking the weight out of the line below
         ir = spi.ir_weight * 1.47 * log(spi.lightSensor.readIR())
         max_array[0], min_array[0], update_med = spi.min_max_test(raw=ir, max=max_array[0],
                                                                   min=min_array[0], med_bool=1)
@@ -173,5 +169,4 @@ while True:
         print("Pas de connexion")
         spi.flash_led(spi.FAIL_LED, 2)
         client.loop_stop()
-        client.disconnect()
         break
