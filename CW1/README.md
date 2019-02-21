@@ -1,16 +1,41 @@
-# An IoT MIDI Controller
+# SKAD00SH: An IoT MIDI Controller
+
+The Skadoosh system is multi-sensory controller for any instrument synthesizer that 
+uses MIDI communication. The current prototype works uses a proximity sensor and a 
+3-axis gyroscope as inputs to control selected synthesizer outputs as decided 
+on the Skadoosh [GitHub hosted webpage](https://callumalder.github.io/ES/)
+- Select the 'App' in the navbar to go to the app page that hosts the main IOT interface, or go [here](https://callumalder.github.io/ES/app.html).
+- Webpage files can be found in the [docs folder](https://github.com/CallumAlder/ES/tree/v1.0-beta/docs)
+
+## Video Demo 
+For the video demonstration of the system, please see the video [here](https://callumalder.github.io/ES/#videoDemo)!
 
 
-[GitHub hosted webpage](https://callumalder.github.io/ES/)
-- Select the 'App' in the navbar to go to the app page that hosts the main IOT interface.
-- Webpage files can be found in the [docs folder](https://github.com/CallumAlder/ES/tree/master/docs)
+## About the System
+Skadoosh systems consists of two raspberry Pi micro-controllers. One Pi gathers sensor 
+data and compresses each value to an output of 0 to 127 for the synthesizer to interpret 
+an effect. This part of the system is the _sensor module_. The compressed values are 
+communicated to the other Pi via an encrypted port of the public MQTT Broker: '[iot.eclipse.org](iot.eclipse.org)'. The other Pi is 
+connected to the synthesizer via its serial port and communicates the mapped sensor data
+to produce changes. This part of the system is the _MIDI module_. 
+
+## Using the System 
+1. Attach the sensor module to the instrument of your choosing in a way that is most 
+comfortable
+2. Connect the MIDI module to the synthesizer
+3. Enjoy your enhanced sound!
+
+## Code 
+Please click here for the main code running in the modules: 
+- [sensorPiMain.py](https://github.com/CallumAlder/ES/tree/v1.0-beta/CW1/Code/sensorPiMain.py) : runs on the sensor module, attached to your instrument.
+- [synthPi.py](https://github.com/CallumAlder/ES/tree/v1.0-beta/CW1/Code/synthPi.py) : runs on the MIDI module.
 
 
 ## Installation
-
+If you are interested in playing with the code yourself:
 1. Setup the python environement 
     ````
-    # Create a virtual environement for storing your stuf:
+    # Create a virtual environement for storing your stuff:
     # install venv (virtual environment)
     sudo apt-get install python3-venv
     # Create venv called skadoosh - it is stored in a folder in the current working directory
