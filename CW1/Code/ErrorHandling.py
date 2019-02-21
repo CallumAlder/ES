@@ -1,8 +1,28 @@
 import logging
 
+import logging
+import datetime
 
-# Parent class to handle bespoke errors
+
+# create logger
+class Logger:
+    def __init__(self):
+        self.logger = logging.getLogger("Enzo_MIDI_IO_Logger:  {}".format(datetime.datetime.now()))
+        self.logger.info("Create Initial Instance")
+
+    def get_logger(self):
+        return self.logger
+
+    def write_log(self, message):
+        self.logger.info("{}: {}".format(datetime.datetime.now(), message))
+
+
+# Parent base class to handle bespoke errors
 class ErrorHandler(Exception):
+    logs = None
+
+    def __init__(self):
+        self.logs = Logger()
     pass
 
 
