@@ -1,4 +1,4 @@
-# ES
+# Embdedded Systems - Skadoosh
 
 # Skadoosh
 The Skadoosh system is multi-sensory controller for any instrument synthesizer that 
