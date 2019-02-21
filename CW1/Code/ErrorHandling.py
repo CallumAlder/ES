@@ -124,7 +124,7 @@ class MIDIConnectionError(ErrorHandler):
             self.expression = expression
 
         if message == None:
-            self.message = "could not establish connection with MIDI device, please serial port connections"
+            self.message = "could not establish connection with MIDI device, please check serial port connections"
         else:
             self.message = message
 

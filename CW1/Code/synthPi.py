@@ -3,6 +3,7 @@ import json
 import time
 import midi_class
 import sensorPiClass
+import ErrorHandling
 
 synPi = sensorPiClass.SenPi(pi="synPi")
 Enzo = midi_class.MidiOUT('enzo', 176, '/dev/ttyAMA0', baud=38400)
@@ -19,7 +20,7 @@ def on_message(client, userdata, msg):
     print("msg: " + str(msg_dict))
     print("json: ", json_msg)
     for key, value in json_msg.items():
-        # Do enzo stuff for each element of json dict.
+        # Perform enzo commands for each element of json dict.
         enzo_comms(Enzo, key, value)
         print("Key: {0}, Value: {1}".format(key, value))
 
@@ -49,7 +50,9 @@ def on_disconnect():
     connect_count = 0
     connect_broker = "iot.eclipse.org"
     connect_port = 8883
+
     while not MQTT_CONNECTED:
+        connect_count += 1
         try:
             # Attempt to connect to the MQTT Broker
             if connect_count == 1:
@@ -57,13 +60,10 @@ def on_disconnect():
                 client.loop_start()
                 time.sleep(0.25)
             if not MQTT_CONNECTED:
-                time.sleep(1)
-            if connect_count >= 5:
-                raise RuntimeError
-        except RuntimeError:
-            # Flash the red (FAIL) LED
-            print("Connection to broker unsuccessful")
-            spi.flash_led(spi.FAIL_LED, 2)
+                time.sleep(2)
+            if connectCounter >= 5:
+                raise ErrorHandling.BrokerConnectionError
+        except ErrorHandling.BrokerConnectionError:
             quit()
 
 
@@ -89,23 +89,16 @@ while not MQTT_CONNECTED:
             client.loop_start()
             time.sleep(0.25)
         if not MQTT_CONNECTED:
-            time.sleep(2)
-        # client.loop_stop()
+            time.sleep(1)
         if connectCounter >= 5:
-            raise RuntimeError
-    except RuntimeError:
-        # Flash the red (FAIL) LED
-        print("Connection to broker unsuccessful")
-        spi.flash_led(spi.FAIL_LED, 2)
+            raise ErrorHandling.BrokerConnectionError
+    except ErrorHandling.BrokerConnectionError:
         quit()
 
 while True:
     if MQTT_CONNECTED:
-        # print("Waiting for data...")
         time.sleep(0.25)
     else:
         client.disconnect()
         print("Pas de connexion")
         break
-
-    # time.sleep(0.25)
