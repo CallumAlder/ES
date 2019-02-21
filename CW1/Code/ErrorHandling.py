@@ -1,9 +1,9 @@
 
 # Parent class to handle bespoke errors
-
 class ErrorHandler(Exception):
     pass
 
+# Child classes for bespoke errors
 class AccelConnection(ErrorHandler):
     pass
 

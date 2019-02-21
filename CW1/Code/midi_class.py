@@ -2,6 +2,9 @@ import serial
 from time import sleep
 
 
+# All the writeable values in this document were found, parsed and decoded from proprietary binary manually
+# See
+
 class MidiOUT:
 
     #  mess_chan=176, port='/dev/ttyAMA0', baud=38400
@@ -107,7 +110,7 @@ class MidiOUT:
             enzo_write = self.__ser.write(bytearray([self.__mess_chan, control, value]))
             if enzo_write == 0:
                 print("MIDI Class:", enzo_write)
-                raise IOError ("MIDI cannot be reached")
+                raise IOError("MIDI cannot be reached")
         except IOError:
             print("ENZO cannot be reached")
         sleep(0.001)
