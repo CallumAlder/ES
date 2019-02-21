@@ -51,11 +51,13 @@ class SenPi(object):
     def init_acc(self):
         self.gpio_mutex.acquire()
         # TODO: Mutex Error
-        # TODO: Connection Error
         try:
             self.agSensor = AccGyro(debug=True)
             self.agSensor.setRange(AccGyro.RANGE_2G)
             time.sleep(0.25)
+        except OSError:
+            raise ErrorHandling.AccelConnectionError
+
         finally:
             self.gpio_mutex.release()
 
@@ -63,10 +65,11 @@ class SenPi(object):
     def init_light(self):
         self.gpio_mutex.acquire()
         # TODO: Mutex Error
-        # TODO: Connection Error - provide warning -> LED feedback
         try:
             self.lightSensor = si1145.SI1145()
             time.sleep(0.25)
+        except OSError:
+            raise ErrorHandling.IRConnectionError
         finally:
             self.gpio_mutex.release()
 
@@ -115,8 +118,6 @@ class SenPi(object):
         while n < cal_trials:
             # IR sensor calibration (for proximity sensing) tuned on a log scale
             val_ir = self.lightSensor.readIR()
-            # TODO: Accelerometer Error - reset sensor
-
             try:
                 # cal_ir = log(self.lightSensor.readIR())
                 if val_ir == 0:
