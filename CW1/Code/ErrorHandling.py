@@ -139,4 +139,6 @@ class MutexError(ErrorHandler):
 
 
 class UndefinedSateError(ErrorHandler):
-    pass
+    def __init__(self, expression, message):
+        super().get_logs().write_log("\nUNDEF STATE REACHED!\n Exp: {}\n Msg: {}".format(expression, message))
+
