@@ -1,35 +1,37 @@
 # ES
 
-## Skadoosh
+# Skadoosh
+The Skadoosh system is multi-sensory controller for any instrument synthesizer that 
+uses MIDI communication. The current prototype works uses a proximity sensor and a 
+3-dimensional gyroscope as inputs to control selected synthesizer outputs as decided 
+on the Skadoosh website here.
 
-### TODO
-1. Make a video [Wednesday]
-2. What to run so it works [Documentation on Github]
-3. Add a compression comment to highlight going from float to int (0-127) & preset mode
-4. Interrupts?
-	1. Preset <-> Freestyle
-	2. Change to and from High Dynamic Range Mode
-5. Github make demo release
+# Video Demo 
+For the video demonstration of the system, please see the video here!
 
-# Callum
-1. Error Handling Class 
-2. Compression / Preset Mode
-3. Un-copy pasta: LIS3DH
-4. Video
+# About the System
+Skadoosh systems consists of two raspberry Pi micro-controllers. One Pi gathers sensor 
+data and compresses each value to an output of 0 to 127 for the synthesizer to interpret 
+and effect. This part of the system is the sensor module. The compressed values are 
+communicated to the other Pi via an MQTT Broker: 'iot.eclipse.org'. The other Pi is 
+connected to the synthesizer via its serial port and communicates the mapped sensor data
+to produce changes. This part of the system is the MIDI module. 
 
-# Ife
-2. Thrading
-6. Video
+# Using the System
+1. Attach the sensor module to the instrument of your choosing in a way that is most 
+comfortable
+2. Connect the MIDI module to the synthesizer
+3. Enjoy your enhanced sound!
 
-# Adel
-1. Website
+# Code 
+Please click here for the main code running in the modules: 
+	- sensorPiMain.py
+	- synthPi.py
 
 # Notes
-Scripts can be made 'executable' with a shebang, e.g: #!/usr/bin/env python3.
-Then using the terminal command: chmod +x si1145.py running the script can
-then be done with: ./si1145.py.
+1. Run on Boot: Scripts can be made 'executable' with a shebang, 
+e.g: #!/usr/bin/env python3. Then using the terminal command: chmod +x si1145.py 
+running the script can then be done with: ./si1145.py.
 
-# Do that thing that fixed
-/home/pi/<user>/lib/python3.5/site-packages/paho/mqtt/client.py 
-Line 772
-context.load_verify_locations(capath=ca_certs)
+2. Adding multiple certificates: /home/pi/<user>/lib/python3.5/site-packages/paho/mqtt/client.py 
+Line 772 context.load_verify_locations(capath=ca_certs)
