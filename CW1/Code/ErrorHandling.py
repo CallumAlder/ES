@@ -68,6 +68,8 @@ class IRIOError(ErrorHandler):
         self.ir_sensor = ir_sensor
         self.reset_ir_sensor(self.ir_sensor)
 
+        super().get_logs().write_log("\n Exp: {}\n Msg: {}\n IR: {}".format(expression, message,ir_sensor))
+
     @staticmethod
     def reset_ir_sensor(ir_sensor):
         ir_sensor._reset()
@@ -94,6 +96,8 @@ class BrokerConnectionError(ErrorHandler):
         self.led_feedback()
         self.spi = sensorPiClass.SenPi()
 
+        super().get_logs().write_log("\n Exp: {}\n Msg: {}".format(expression, message))
+
     def led_feedback(self):
         # Flash the red (FAIL) LED
         print("Connection to broker unsuccessful")
@@ -101,6 +105,8 @@ class BrokerConnectionError(ErrorHandler):
 
 
 class MIDIConnectionError(ErrorHandler):
+
+
     pass
 
 
