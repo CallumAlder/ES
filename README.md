@@ -18,19 +18,11 @@
 4. Video
 
 # Ife
-1. Error Handling - comment errors to Callum
 2. Thrading
-3. Encryption - done (use the write MQTT port on test.mosquitto.org)
-4. Un-copy pasta: Si1145 - 
-5. On disconnet try and reconnect
 6. Video
 
 # Adel
-1. Error Handling - comment errors to Callum
-2. Thrading - added Mutex for GPIO
-3. Encryption - .js conversion
-4. Comment JS a bit
-5. Update website - make up some email and tings
+1. Website
 
 # Notes
 Scripts can be made 'executable' with a shebang, e.g: #!/usr/bin/env python3.

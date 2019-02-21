@@ -28,10 +28,6 @@ Implementation Notes
 * Si1145 sensor set to be in dynamic high range mode such that it can be exploited
   for proximity sensing
 
-Hardware
--------------------------
-* Si1145 Infrared, UV Index and Ambient Light sensor
-
 Software and Dependencies
 -------------------------
 * Adafruit_GPIO
@@ -65,8 +61,7 @@ SI1145_PSALS_AUTO                       = 0x0F  # (Re)start autonomous PS & ALS 
 SI1145_GET_CAL                          = 0x12  # Push calibration data to registers
 
 # Parameters
-    # Must use PARAM_QUERY or _SET to access
-    # Enable
+    # Must use PARAM_QUERY or _SET to access enable
 SI1145_PARAM_I2CADDR                    = 0x00  # [7:0]=i2c address
 SI1145_PARAM_CHLIST                     = 0x01  # Data channel enabler
 SI1145_PARAM_CHLIST_ENUV                = 0x80  # CHLIST[7]=Enable UV
