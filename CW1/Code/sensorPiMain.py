@@ -3,11 +3,12 @@ import datetime
 import json
 import paho.mqtt.client as mqtt
 import sensorPiClass
+import ErrorHandling
 
 from time import sleep
 from math import log
 
-spi = sensorPiClass.SenPi()
+spi = sensorPiClass.SenPi(pi="senPi")
 spi.init_light()
 spi.init_acc()
 
@@ -25,11 +26,12 @@ def on_message(client, userdata, msg):
         print("Turn change LED on...")
         spi.flash_led(spi.CHANGE_LED, 2)
 
-
+MQTT_CONNECTED = False
 def on_connect(client, userdata, flags, rc):
     # The client has connected to the broker
     print("Connected with result code: " + str(rc))
-
+    global MQTT_CONNECTED
+    MQTT_CONNECTED = True
     # This Pi will be listening to messages on this topic
     client.subscribe()
 
@@ -38,9 +40,31 @@ def on_connect(client, userdata, flags, rc):
 
 
 def on_disconnect():
-    # Attempt to reconnect
-    return
+    global MQTT_CONNECTED
+    MQTT_CONNECTED = False
 
+    # Attempt to reconnect
+    connect_count = 0
+    connect_broker = "iot.eclipse.org"
+    connect_port = 8883
+
+    while not MQTT_CONNECTED:
+        connect_count += 1
+        try:
+            # Attempt to connect to the MQTT Broker
+            if connect_count == 1:
+                client.connect_async(connect_broker, port=connect_port)
+                client.loop_start()
+                time.sleep(0.25)
+            if not MQTT_CONNECTED:
+                time.sleep(2)
+            if connectCounter >= 5:
+                raise ErrorHandling.BrokerConnectionError
+        except ErrorHandling.BrokerConnectionError:
+            quit()
+
+
+# Get data into a JSON format
 def extract_data(s_data):
     s_data = s_data.replace("b", "")
     s_data = s_data.replace("'", "")
@@ -56,7 +80,7 @@ current_x = 0
 current_y = 0
 current_z = 0
 
-broker = "iot.eclipse.org1"
+broker = "iot.eclipse.org"
 port = 8883
 
 client = mqtt.Client()
@@ -68,27 +92,32 @@ client.on_disconnect = on_disconnect
 # Client certificate details
 client.tls_set(ca_certs="/home/pi/ES/CW1/Code/security_certs/")
 
-X = -1
-start = time.time()
-while X != 0:
-    time.sleep(0.5)
+connectCounter = 0
+while not MQTT_CONNECTED:
+    connectCounter += 1
     try:
         # Attempt to connect to the MQTT Broker
-        X = client.connect(broker, port=port)
-    except:     # Add an exception to catch
-        # Flash the red (FAIL) LED
-        print("Error - RED LED on. X: " + str(X))
-        spi.flash_led(spi.FAIL_LED, 2)
+        if connectCounter == 1:
+            client.connect_async(broker, port=port)
+            client.loop_start()
+            time.sleep(0.25)
+        if not MQTT_CONNECTED:
+            time.sleep(1)
+        if connectCounter >= 5:
+            raise ErrorHandling.BrokerConnectionError
+    except ErrorHandling.BrokerConnectionError:
+        quit()
+
+spi.flash_led(spi.SUCCESS_LED, 2)
 
 # Get range of data values for all sensors
 max_array, min_array, med_array = spi.sensor_calibration()
 print("Parameters for calibration extracted.")
 
-client.loop_start()
+
 while True:
-    if X == 0:
+    if MQTT_CONNECTED:
         # Handling IR sensor data for dynamic proximity approximation
-        # TODO: Try taking the weight out of the line below
         ir = spi.ir_weight * 1.47 * log(spi.lightSensor.readIR())
         max_array[0], min_array[0], update_med = spi.min_max_test(raw=ir, max=max_array[0],
                                                                   min=min_array[0], med_bool=1)
@@ -140,5 +169,4 @@ while True:
         print("Pas de connexion")
         spi.flash_led(spi.FAIL_LED, 2)
         client.loop_stop()
-        client.disconnect()
         break

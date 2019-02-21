@@ -1,12 +1,19 @@
 import serial
+import ErrorHandling
+
 from time import sleep
 
 
+# All the writeable values in this document were found, parsed and decoded from proprietary binary manually
+# See parsing binary.jpg and .mp4
+
 class MidiOUT:
 
-    #  mess_chan=176, port='/dev/ttyAMA0', baud=38400
+    #  e.e: mess_chan=176, port='/dev/ttyAMA0', baud=38400
     def __init__(self, name, mess_chan, port, baud):
-        self.__ser = serial.Serial(port, baudrate=baud)
+
+        self.__ser = serial.Serial(port, baudrate=baud, write_timeout=0)
+
         self.__name = name
         self.__mess_chan = mess_chan
 
@@ -99,5 +106,10 @@ class MidiOUT:
         else:
             return None
 
-        self.__ser.write(bytearray([self.__mess_chan, control, value]))
+        try:
+            enzo_write = self.__ser.write(bytearray([self.__mess_chan, control, value]))
+            if enzo_write == 0:
+                raise ErrorHandling.MIDIConnectionError
+        except ErrorHandling.MIDIConnectionError:
+            sleep(0.001)
         sleep(0.001)
