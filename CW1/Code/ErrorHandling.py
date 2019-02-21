@@ -49,7 +49,20 @@ class AccelConnectionError(ErrorHandler):
 
 
 class IRConnectionError(ErrorHandler):
-    pass
+    def __init__(self, expression, message):
+
+        if expression == None:
+            self.expression = ""
+        else:
+            self.expression = expression
+
+        if message == None:
+            self.message = "could not establish connection with IR device, please serial port connections"
+        else:
+            self.message = message
+
+        super().get_logs().write_log("\n Exp: {}\n Msg: {}".format(expression, message))
+
 
 
 class IRIOError(ErrorHandler):
@@ -105,9 +118,20 @@ class BrokerConnectionError(ErrorHandler):
 
 
 class MIDIConnectionError(ErrorHandler):
+    def __init__(self, expression, message):
 
+        if expression == None:
+            self.expression = ""
+        else:
+            self.expression = expression
 
-    pass
+        if message == None:
+            self.message = "could not establish connection with MIDI device, please serial port connections"
+        else:
+            self.message = message
+
+        super().get_logs().write_log("\n Exp: {}\n Msg: {}".format(expression, message))
+
 
 
 class MutexError(ErrorHandler):
