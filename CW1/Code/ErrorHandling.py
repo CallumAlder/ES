@@ -1,6 +1,7 @@
 import sensorPiClass
 import logging
 import datetime
+import time
 
 
 # create logger
@@ -48,7 +49,20 @@ class AccelConnectionError(ErrorHandler):
 
 
 class IRConnectionError(ErrorHandler):
-    pass
+    def __init__(self, expression, message):
+
+        if expression == None:
+            self.expression = ""
+        else:
+            self.expression = expression
+
+        if message == None:
+            self.message = "could not establish connection with IR device, please serial port connections"
+        else:
+            self.message = message
+
+        super().get_logs().write_log("\n Exp: {}\n Msg: {}".format(expression, message))
+
 
 
 class IRIOError(ErrorHandler):
@@ -66,6 +80,8 @@ class IRIOError(ErrorHandler):
 
         self.ir_sensor = ir_sensor
         self.reset_ir_sensor(self.ir_sensor)
+
+        super().get_logs().write_log("\n Exp: {}\n Msg: {}\n IR: {}".format(expression, message,ir_sensor))
 
     @staticmethod
     def reset_ir_sensor(ir_sensor):
@@ -93,6 +109,8 @@ class BrokerConnectionError(ErrorHandler):
         self.led_feedback()
         self.spi = sensorPiClass.SenPi()
 
+        super().get_logs().write_log("\n Exp: {}\n Msg: {}".format(expression, message))
+
     def led_feedback(self):
         # Flash the red (FAIL) LED
         print("Connection to broker unsuccessful")
@@ -100,7 +118,20 @@ class BrokerConnectionError(ErrorHandler):
 
 
 class MIDIConnectionError(ErrorHandler):
-    pass
+    def __init__(self, expression, message):
+
+        if expression == None:
+            self.expression = ""
+        else:
+            self.expression = expression
+
+        if message == None:
+            self.message = "could not establish connection with MIDI device, please serial port connections"
+        else:
+            self.message = message
+
+        super().get_logs().write_log("\n Exp: {}\n Msg: {}".format(expression, message))
+
 
 
 class MutexError(ErrorHandler):
