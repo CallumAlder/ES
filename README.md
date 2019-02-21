@@ -34,11 +34,11 @@ Please click here for the main code running in the modules:
 e.g: #!/usr/bin/env python3. Then creating and running can be 
 done with the terminal commands: 
 
-chmod +x si1145.py 
-./si1145.py
+	- chmod +x si1145.py 
+	- ./si1145.py
 
 2. Adding multiple certificates: 
 
 /home/pi/<user>/lib/python3.5/site-packages/paho/mqtt/client.py 
-Line 772 
-context.load_verify_locations(capath=ca_certs)
+Line 772: 
+	- context.load_verify_locations(capath=ca_certs)
