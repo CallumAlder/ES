@@ -46,7 +46,6 @@ class SenPi(object):
         self.publish_topic1 = "IC.embedded/skadoosh/sensor"
         self.listen_topic1 = "IC.embedded/skadoosh/midi"
 
-
     # Create accelerometer object
     def init_acc(self):
         self.gpio_mutex.acquire()
@@ -70,7 +69,6 @@ class SenPi(object):
     def init_gpio(self, pin, mode):
         if mode == 1:
             self._GPIO.set_mode(pin, pigpio.OUTPUT)
-            # TODO: Add an INPUT mode?
 
     # Test that the LEDs are working by having them all turn on very quickly
     def test_leds(self, success_led, fail_led, chg_led):
