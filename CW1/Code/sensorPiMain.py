@@ -3,6 +3,7 @@ import datetime
 import json
 import paho.mqtt.client as mqtt
 import sensorPiClass
+import ErrorHandling
 
 from time import sleep
 from math import log
@@ -107,11 +108,9 @@ while not MQTT_CONNECTED:
             time.sleep(2)
         # client.loop_stop()
         if connectCounter >= 5:
-            raise RuntimeError
-    except RuntimeError:
-        # Flash the red (FAIL) LED
-        print("Connection to broker unsuccessful")
-        spi.flash_led(spi.FAIL_LED, 2)
+            raise ErrorHandling.BrokerConnectionError
+    except ErrorHandling.BrokerConnectionError:
+
         quit()
 
 spi.flash_led(spi.SUCCESS_LED, 2)

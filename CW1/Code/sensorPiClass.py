@@ -117,22 +117,21 @@ class SenPi(object):
             val_ir = self.lightSensor.readIR()
             # TODO: Accelerometer Error - reset sensor
 
-            if val_ir == 0:
-                raise ErrorHandling.IRIOError()
-                n -= 1
-                continue
-
             try:
                 # cal_ir = log(self.lightSensor.readIR())
+                if val_ir == 0:
+                    raise ErrorHandling.IRIOError(message="Error - IR value received " + str(val_ir),
+                                                  ir_sensor=self.lightSensor)
                 cal_ir = log(val_ir)
-            except ValueError:
-                print("Error - IR value received =", str(val_ir))
-                self.lightSensor._reset()
-                time.sleep(0.01)
-                self.lightSensor._load_calibration()
-                time.sleep(0.01)
-                print("Light Sensor reset")
-
+            except ErrorHandling.IRIOError:
+                # print("Error - IR value received =", str(val_ir))
+                # self.lightSensor._reset()
+                # time.sleep(0.01)
+                # self.lightSensor._load_calibration()
+                # time.sleep(0.01)
+                # print("Light Sensor reset")
+                n -= 1
+                continue
 
             max_ir, min_ir = self.min_max_test(raw=cal_ir, max=max_ir, min=min_ir, med_bool=None)
 

@@ -1,4 +1,5 @@
 import logging
+import sensorPiClass
 
 
 # Parent class to handle bespoke errors
@@ -7,7 +8,7 @@ class ErrorHandler(Exception):
 
 
 # Child classes for bespoke errors
-class AccelConnection(ErrorHandler):
+class AccelConnectionError(ErrorHandler):
     def __init__(self, expression, message):
 
         if expression == None:
@@ -21,29 +22,60 @@ class AccelConnection(ErrorHandler):
             self.message = message
 
 
-class IRConnection(ErrorHandler):
+class IRConnectionError(ErrorHandler):
     pass
 
 
 class IRIOError(ErrorHandler):
-    def __init__(self):
-        self.pi = 1
+    def __init__(self, expression, message, ir_sensor):
 
-    def reset_IR_sensor(self, ir_sensor):
-        print("Error - IR value received =", str(val_ir))
+        if expression == None:
+            self.expression = ""
+        else:
+            self.expression = expression
+
+        if message == None:
+            self.message = "IR sensor requires resetting"
+        else:
+            self.message = message
+
+        self.ir_sensor = ir_sensor
+        self.reset_ir_sensor(self.ir_sensor)
+
+    @staticmethod
+    def reset_ir_sensor(ir_sensor):
         ir_sensor._reset()
         time.sleep(0.01)
+
         ir_sensor._load_calibration()
         time.sleep(0.01)
         print("Light Sensor reset")
-    pass
 
 
-class BrokerConnection(ErrorHandler):
-    pass
+class BrokerConnectionError(ErrorHandler):
+    def __init__(self, expression, message):
+
+        if expression == None:
+            self.expression = ""
+        else:
+            self.expression = expression
+
+        if message == None:
+            self.message = "could not establish connection with MQTT Broker, try reconnecting web app"
+        else:
+            self.message = message
+
+        self.led_feedback()
+        self.spi = sensorPiClass.SenPi()
+
+    @staticmethod
+    def led_feedback():
+        # Flash the red (FAIL) LED
+        print("Connection to broker unsuccessful")
+        spi.flash_led(spi.FAIL_LED, 2)
 
 
-class MIDIConnection(ErrorHandler):
+class MIDIConnectionError(ErrorHandler):
     pass
 
 
@@ -51,5 +83,5 @@ class MutexError(ErrorHandler):
     pass
 
 
-class UndefinedSate(ErrorHandler):
+class UndefinedSateError(ErrorHandler):
     pass
