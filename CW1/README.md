@@ -8,7 +8,7 @@ on the Skadoosh [GitHub hosted webpage](https://callumalder.github.io/ES/)
 - Webpage files can be found in the [docs folder](https://github.com/CallumAlder/ES/tree/v1.0-beta/docs)
 
 ## Video Demo 
-For the video demonstration of the system, please see the video [here](https://callumalder.github.io/ES/#videoDemo)!
+For the video demonstration of the system, you can download the video [here](https://github.com/CallumAlder/ES/blob/v1.0-beta/docs/vids/Skadoosh-Demo.mp4) or see it [hosted here](https://callumalder.github.io/ES/#videoDemo)!
 
 
 ## About the System
