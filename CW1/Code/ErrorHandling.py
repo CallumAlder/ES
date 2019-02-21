@@ -11,6 +11,16 @@ class IRConnection(ErrorHandler):
     pass
 
 class IRIOError(ErrorHandler):
+    def __init__(self):
+        self.pi = 1
+
+    def reset_IR_sensor(self, ir_sensor):
+        print("Error - IR value received =", str(val_ir))
+        ir_sensor._reset()
+        time.sleep(0.01)
+        ir_sensor._load_calibration()
+        time.sleep(0.01)
+        print("Light Sensor reset")
     pass
 
 class BrokerConnection(ErrorHandler):

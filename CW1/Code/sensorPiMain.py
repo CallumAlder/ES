@@ -46,6 +46,8 @@ def on_disconnect():
     connect_count = 0
     connect_broker = "iot.eclipse.org"
     connect_port = 8883
+
+    # TODO: Broker Connection Error
     while not MQTT_CONNECTED:
         try:
             # Attempt to connect to the MQTT Broker
@@ -94,6 +96,7 @@ client.tls_set(ca_certs="/home/pi/ES/CW1/Code/security_certs/")
 connectCounter = 0
 while not MQTT_CONNECTED:
     connectCounter += 1
+    # TODO: Broker Connection Error
     try:
         # Attempt to connect to the MQTT Broker
         if connectCounter == 1:
@@ -121,7 +124,6 @@ print("Parameters for calibration extracted.")
 while True:
     if MQTT_CONNECTED:
         # Handling IR sensor data for dynamic proximity approximation
-        # TODO: Try taking the weight out of the line below
         ir = spi.ir_weight * 1.47 * log(spi.lightSensor.readIR())
         max_array[0], min_array[0], update_med = spi.min_max_test(raw=ir, max=max_array[0],
                                                                   min=min_array[0], med_bool=1)
