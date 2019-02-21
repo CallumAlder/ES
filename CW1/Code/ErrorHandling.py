@@ -29,8 +29,6 @@ class ErrorHandler(Exception):
     def get_logs(self):
         return self.logs
 
-    pass
-
 # Child classes for bespoke errors
 class AccelConnectionError(ErrorHandler):
     def __init__(self, expression, message):
@@ -133,7 +131,6 @@ class MIDIConnectionError(ErrorHandler):
         super().get_logs().write_log("\n Exp: {}\n Msg: {}".format(expression, message))
 
 
-
 class MutexError(ErrorHandler):
     pass
 
@@ -141,4 +138,3 @@ class MutexError(ErrorHandler):
 class UndefinedSateError(ErrorHandler):
     def __init__(self, expression, message):
         super().get_logs().write_log("\nUNDEF STATE REACHED!\n Exp: {}\n Msg: {}".format(expression, message))
-

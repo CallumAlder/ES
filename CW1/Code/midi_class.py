@@ -3,11 +3,11 @@ from time import sleep
 
 
 # All the writeable values in this document were found, parsed and decoded from proprietary binary manually
-# See
+# See parsing binary.jpg and .mp4
 
 class MidiOUT:
 
-    #  mess_chan=176, port='/dev/ttyAMA0', baud=38400
+    #  e.e: mess_chan=176, port='/dev/ttyAMA0', baud=38400
     def __init__(self, name, mess_chan, port, baud):
         try:
             self.__ser = serial.Serial(port, baudrate=baud, write_timeout=0)
