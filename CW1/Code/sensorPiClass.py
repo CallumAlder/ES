@@ -11,37 +11,40 @@ from threading import Thread, Lock
 
 class SenPi(object):
     # Class object interfaces the sensors and the raspberry Pi
-    def __init__(self, debug=True):
+    def __init__(self, debug=False, pi=""):
         self.isDebug = debug
         self.debug("Initialising sensor Pi interface object")
 
         self._GPIO = pigpio.pi()
 
+        self.which_pi = pi
+
         # LEDs are used as feedback for: system errors, state changes and successful connections
         self.SUCCESS_LED = 22   # Success LED - Blinks when the guitar module connects to the web broker
-        self.CHANGE_LED = 23  # Change LED - Blinks when the mapping of sensor data to outputs has changed
+        self.CHANGE_LED = 23    # Change LED - Blinks when the mapping of sensor data to outputs has changed
         self.FAIL_LED = 24      # Fail LED - Blinks once when a connection error occurs
 
-        self.init_gpio(self.SUCCESS_LED, 1)
-        self.init_gpio(self.CHANGE_LED, 1)
-        self.init_gpio(self.FAIL_LED, 1)
+        if self.which_pi == "senPi":
+            self.init_gpio(self.SUCCESS_LED, 1)
+            self.init_gpio(self.CHANGE_LED, 1)
+            self.init_gpio(self.FAIL_LED, 1)
 
-        self.test_leds(self.SUCCESS_LED, self.CHANGE_LED, self.FAIL_LED)
+            self.test_leds(self.SUCCESS_LED, self.CHANGE_LED, self.FAIL_LED)
 
-        self.lightSensor = None
-        self.agSensor = None
+            self.lightSensor = None
+            self.agSensor = None
 
-        # Weights used for exponential filtering in sensor acquisition
-        self.ir_weight = 0.72
-        self.x_weight = 0.2
-        self.y_weight = 0.3
-        self.z_weight = 0.26
+            # Weights used for exponential filtering in sensor acquisition
+            self.ir_weight = 0.72
+            self.x_weight = 0.2
+            self.y_weight = 0.3
+            self.z_weight = 0.26
+
+            self.gpio_mutex = Lock()
 
         # Topics to listen or publish to
         self.publish_topic1 = "IC.embedded/skadoosh/sensor"
         self.listen_topic1 = "IC.embedded/skadoosh/midi"
-
-        self.gpio_mutex = Lock()
 
     # Create accelerometer object
     def init_acc(self):
@@ -66,7 +69,6 @@ class SenPi(object):
     def init_gpio(self, pin, mode):
         if mode == 1:
             self._GPIO.set_mode(pin, pigpio.OUTPUT)
-            # TODO: Add an INPUT mode?
 
     # Test that the LEDs are working by having them all turn on very quickly
     def test_leds(self, success_led, fail_led, chg_led):

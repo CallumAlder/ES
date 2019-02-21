@@ -7,7 +7,7 @@ import sensorPiClass
 from time import sleep
 from math import log
 
-spi = sensorPiClass.SenPi()
+spi = sensorPiClass.SenPi(pi="senPi")
 spi.init_light()
 spi.init_acc()
 
