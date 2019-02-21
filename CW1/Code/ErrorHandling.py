@@ -1,4 +1,3 @@
-import logging
 import sensorPiClass
 
 import logging
@@ -88,11 +87,10 @@ class BrokerConnectionError(ErrorHandler):
         self.led_feedback()
         self.spi = sensorPiClass.SenPi()
 
-    @staticmethod
-    def led_feedback():
+    def led_feedback(self):
         # Flash the red (FAIL) LED
         print("Connection to broker unsuccessful")
-        spi.flash_led(spi.FAIL_LED, 2)
+        self.spi.flash_led(spi.FAIL_LED, 2)
 
 
 class MIDIConnectionError(ErrorHandler):
