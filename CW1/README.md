@@ -1,9 +1,9 @@
 # SKAD00SH: An IoT MIDI Controller
 
 The Skadoosh system is multi-sensory controller for any instrument synthesizer that 
-uses MIDI communication. The current prototype works uses a proximity sensor and a 
+uses MIDI communication. The current prototype includes a proximity sensor and a 
 3-axis gyroscope as inputs to control selected synthesizer outputs as decided 
-on the Skadoosh [GitHub hosted webpage](https://callumalder.github.io/ES/)
+on the Skadoosh [GitHub hosted webpage app](https://callumalder.github.io/ES/)
 - Select the 'App' in the navbar to go to the app page that hosts the main IOT interface, or go [here](https://callumalder.github.io/ES/app.html).
 - Webpage files can be found in the [docs folder](https://github.com/CallumAlder/ES/tree/v1.0-beta/docs)
 
@@ -14,7 +14,7 @@ For the video demonstration of the system, you can download the video [here](htt
 ## About the System
 Skadoosh systems consists of two raspberry Pi micro-controllers. One Pi gathers sensor 
 data and compresses each value to an output of 0 to 127 for the synthesizer to interpret 
-an effect. This part of the system is the _sensor module_. The compressed values are 
+an effect. This part of the system is the _Sensor module_. The compressed values are 
 communicated to the other Pi via an encrypted port of the public MQTT Broker: '[iot.eclipse.org](iot.eclipse.org)'. The other Pi is 
 connected to the synthesizer via its serial port and communicates the mapped sensor data
 to produce changes. This part of the system is the _MIDI module_. 
