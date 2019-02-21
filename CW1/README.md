@@ -3,6 +3,7 @@
 
 [GitHub hosted webpage](https://callumalder.github.io/ES/)
 - Select the 'App' in the navbar to go to the app page that hosts the main IOT interface.
+- Webpage files can be found in the [docs folder](https://github.com/CallumAlder/ES/tree/master/docs)
 
 
 ## Installation
@@ -43,7 +44,7 @@
 
 ## Helpful Notes:
 
-1. Scripts can be made 'executable' with a shebang, e.g: #!/usr/bin/env python3.
-Then using the terminal command: chmod +x si1145.py running the script can
-then be done with: ./si1145.py.
+1. Scripts can be made 'executable' with a shebang, e.g: `#!/usr/bin/env python3`
+Then using the terminal command: `chmod +x si1145.py` . Running the script can
+then be done with: `./si1145.py`
 
