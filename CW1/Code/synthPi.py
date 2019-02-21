@@ -4,7 +4,7 @@ import time
 import midi_class
 import sensorPiClass
 
-synPi = sensorPiClass.SenPi(debug=True)
+synPi = sensorPiClass.SenPi(pi="synPi")
 Enzo = midi_class.MidiOUT('enzo', 176, '/dev/ttyAMA0', baud=38400)
 
 
