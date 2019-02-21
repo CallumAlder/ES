@@ -31,8 +31,14 @@ Please click here for the main code running in the modules:
 
 # Notes
 1. Run on Boot: Scripts can be made 'executable' with a shebang, 
-e.g: #!/usr/bin/env python3. Then using the terminal command: chmod +x si1145.py 
-running the script can then be done with: ./si1145.py.
+e.g: #!/usr/bin/env python3. Then creating and running can be 
+done with the terminal commands: 
 
-2. Adding multiple certificates: /home/pi/<user>/lib/python3.5/site-packages/paho/mqtt/client.py 
-Line 772 context.load_verify_locations(capath=ca_certs)
+chmod +x si1145.py 
+./si1145.py
+
+2. Adding multiple certificates: 
+
+/home/pi/<user>/lib/python3.5/site-packages/paho/mqtt/client.py 
+Line 772 
+context.load_verify_locations(capath=ca_certs)
