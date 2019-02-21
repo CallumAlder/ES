@@ -1,6 +1,4 @@
 import logging
-
-import logging
 import datetime
 
 
@@ -30,7 +28,6 @@ class ErrorHandler(Exception):
         return self.logs
 
     pass
-
 
 # Child classes for bespoke errors
 class AccelConnection(ErrorHandler):
