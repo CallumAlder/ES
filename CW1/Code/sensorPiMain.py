@@ -3,6 +3,7 @@ import datetime
 import json
 import paho.mqtt.client as mqtt
 import sensorPiClass
+import ErrorHandling
 
 from time import sleep
 from math import log
@@ -46,6 +47,8 @@ def on_disconnect():
     connect_count = 0
     connect_broker = "iot.eclipse.org"
     connect_port = 8883
+
+    # TODO: Broker Connection Error
     while not MQTT_CONNECTED:
         try:
             # Attempt to connect to the MQTT Broker
@@ -94,6 +97,7 @@ client.tls_set(ca_certs="/home/pi/ES/CW1/Code/security_certs/")
 connectCounter = 0
 while not MQTT_CONNECTED:
     connectCounter += 1
+    # TODO: Broker Connection Error
     try:
         # Attempt to connect to the MQTT Broker
         if connectCounter == 1:
@@ -104,11 +108,9 @@ while not MQTT_CONNECTED:
             time.sleep(2)
         # client.loop_stop()
         if connectCounter >= 5:
-            raise RuntimeError
-    except RuntimeError:
-        # Flash the red (FAIL) LED
-        print("Connection to broker unsuccessful")
-        spi.flash_led(spi.FAIL_LED, 2)
+            raise ErrorHandling.BrokerConnectionError
+    except ErrorHandling.BrokerConnectionError:
+
         quit()
 
 spi.flash_led(spi.SUCCESS_LED, 2)
@@ -121,7 +123,6 @@ print("Parameters for calibration extracted.")
 while True:
     if MQTT_CONNECTED:
         # Handling IR sensor data for dynamic proximity approximation
-        # TODO: Try taking the weight out of the line below
         ir = spi.ir_weight * 1.47 * log(spi.lightSensor.readIR())
         max_array[0], min_array[0], update_med = spi.min_max_test(raw=ir, max=max_array[0],
                                                                   min=min_array[0], med_bool=1)

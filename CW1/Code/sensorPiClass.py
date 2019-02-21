@@ -1,6 +1,7 @@
 import si1145
 import time
 import pigpio
+import ErrorHandling
 
 import numpy as np
 
@@ -49,6 +50,8 @@ class SenPi(object):
     # Create accelerometer object
     def init_acc(self):
         self.gpio_mutex.acquire()
+        # TODO: Mutex Error
+        # TODO: Connection Error
         try:
             self.agSensor = AccGyro(debug=True)
             self.agSensor.setRange(AccGyro.RANGE_2G)
@@ -59,6 +62,8 @@ class SenPi(object):
     # Create light sensor object
     def init_light(self):
         self.gpio_mutex.acquire()
+        # TODO: Mutex Error
+        # TODO: Connection Error - provide warning -> LED feedback
         try:
             self.lightSensor = si1145.SI1145()
             time.sleep(0.25)
@@ -110,16 +115,21 @@ class SenPi(object):
         while n < cal_trials:
             # IR sensor calibration (for proximity sensing) tuned on a log scale
             val_ir = self.lightSensor.readIR()
+            # TODO: Accelerometer Error - reset sensor
+
             try:
                 # cal_ir = log(self.lightSensor.readIR())
+                if val_ir == 0:
+                    raise ErrorHandling.IRIOError(message="Error - IR value received " + str(val_ir),
+                                                  ir_sensor=self.lightSensor)
                 cal_ir = log(val_ir)
-            except ValueError:
-                print("Error - IR value received =", str(val_ir))
-                self.lightSensor._reset()
-                time.sleep(0.01)
-                self.lightSensor._load_calibration()
-                time.sleep(0.01)
-                print("Light Sensor reset")
+            except ErrorHandling.IRIOError:
+                # print("Error - IR value received =", str(val_ir))
+                # self.lightSensor._reset()
+                # time.sleep(0.01)
+                # self.lightSensor._load_calibration()
+                # time.sleep(0.01)
+                # print("Light Sensor reset")
                 n -= 1
                 continue
 
