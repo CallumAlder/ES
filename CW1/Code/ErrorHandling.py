@@ -1,11 +1,12 @@
 import sensorPiClass
-
 import logging
 import datetime
 
 
 # create logger
 class Logger:
+    logger = None
+
     def __init__(self):
         self.logger = logging.getLogger("Enzo_MIDI_IO_Logger:  {}".format(datetime.datetime.now()))
         self.logger.info("Create Initial Instance")
@@ -23,8 +24,11 @@ class ErrorHandler(Exception):
 
     def __init__(self):
         self.logs = Logger()
-    pass
 
+    def get_logs(self):
+        return self.logs
+
+    pass
 
 # Child classes for bespoke errors
 class AccelConnectionError(ErrorHandler):
@@ -39,6 +43,8 @@ class AccelConnectionError(ErrorHandler):
             self.message = "could not establish connection with GyroScope, please check wiring"
         else:
             self.message = message
+
+        super().get_logs().write_log("\n Exp: {}\n Msg: {}".format(expression, message))
 
 
 class IRConnectionError(ErrorHandler):
